@@ -17,9 +17,9 @@ from __future__ import print_function
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='Path of Input Directory from Current Path', required=False)
 parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path', required=False)
+parser.add_argument('-m', '--metafile', help='Path of Lat Lon text file from Current Path', required=False)
+parser.add_argument('-sy', '--startyear', help='Start Year e.g 1980', required=False)
 args = parser.parse_args()
-
-
 def output_fdir(argument_path):
     dir_path = os.path.abspath(argument_path)
     if os.path.exists(dir_path):
@@ -67,6 +67,13 @@ elif os.path.exists("../G2F data preprocessing/Meta/output/"):
 else:
     print(
         "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+if args.metafile is not None:
+    latlonpath = os.path.abspath(args.metafile)
+    if os.path.exists(latlonpath):
+        if os.path.isfile(latlonpath):
+            latlonfile = latlonpath
+    else:
+        print(f"The provided path ")
 
 print("Input directory = ", Input_dir)
 print("Output directory ", Output_dir)
