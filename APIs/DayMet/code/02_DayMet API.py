@@ -67,38 +67,51 @@ elif os.path.exists("../G2F data preprocessing/Meta/output/"):
 else:
     print(
         "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+    sys.exit()
 if args.metafile is not None:
     latlonpath = os.path.abspath(args.metafile)
     if os.path.exists(latlonpath):
         if os.path.isfile(latlonpath):
             latlonfile = latlonpath
+        else:
+            latlonfile = os.path.join(latlonpath, "latlon.txt")
     else:
-        print(f"The provided path ")
+        print(f"The provided path {args.metafile} does not exists. Absolute path based on provided path is {latlonpath}")
+elif os.path.exists(Output_dir):
+    if os.path.isfile(os.path.join(pathlib.Path(Output_dir).parent, "latlon.txt")):
+        latlonfile = os.path.join(pathlib.Path(Output_dir).parent, "latlon.txt")
+    elif os.path.isfile(os.path.join(pathlib.Path(Output_dir).parent.parent, "code/latlon.txt")):
+        latlonfile = os.path.join(pathlib.Path(Output_dir).parent.parent, "code/latlon.txt")
+    elif os.path.isfile(os.path.join(pathlib.Path(Output_dir).parent.parent, "latlon.txt")):
+        latlonfile = os.path.join(pathlib.Path(Output_dir).parent.parent, "latlon.txt")
+    elif os.path.isfile(os.path.join(pathlib.Path(Output_dir).parent.parent.parent, "latlon.txt")):
+        latlonfile = os.path.join(pathlib.Path(Output_dir).parent.parent.parent, "latlon.txt")
+    elif os.path.isfile(os.path.join(os.getcwd(), "latlon.txt")):
+        latlonfile = os.path.join(os.getcwd(), "latlon.txt")
+    elif os.path.isfile(os.path.join(os.getcwd().parent, "output/latlon.txt")):
+        latlonfile = os.path.join(os.getcwd().parent, "output/latlon.txt")
+    else:
+        print(f"The Meta file (lat lon) does not exists, use -m flag to provide location of file")
+        sys.exit()
+else:
+    if os.path.isfile(os.path.join(os.getcwd(), "latlon.txt")):
+        latlonfile = os.path.join(os.getcwd(), "latlon.txt")
+    elif os.path.isfile(os.path.join(os.getcwd().parent, "output/latlon.txt")):
+        latlonfile = os.path.join(os.getcwd().parent, "output/latlon.txt")
+    else:
+        print(f"The Meta file (lat lon) does not exists, use -m flag to provide location of file")
+        sys.exit()
+
+
 
 print("Input directory = ", Input_dir)
 print("Output directory ", Output_dir)
-# =============================================================================
-# Input and Output directories
-# =============================================================================
-path = os.chdir ("../../../G2F data preprocessing/Meta/output/")
-Input_dir = os.getcwd ().replace ("\\", "/")
-Input_dir = Input_dir + "/"
-Output_dir = os.chdir ("../../../APIs/DayMet/output/Download")
-Output_dir = os.getcwd ().replace ("\\", "/")
-Output_dir = Output_dir + "/"
-print("Input directory = ", Input_dir)
-print ("Output directory ", Output_dir)
+if args.startyear is not None:
+    STARTYEAR = args.startyear
+else:
+    STARTYEAR = 1980
 
-# =============================================================================
-os.chdir ("../../code/")
-if (len(sys.argv) < 2):
-    print("Error: Expected input file")
-    print("Usage: $ python daymet_multiple_extraction.py FileName")
-    sys.exit()
-
-STARTYEAR = 1980
-
-df = pd.read_csv (Input_dir + "lat_lon.csv")
+df = pd.read_csv(os.path.join(Input_dir, "lat_lon.csv"))
 Year_list = df ["Year"].tolist ()
 ENDYEAR = max (Year_list)
 #ENDYEAR   = 2018
@@ -119,7 +132,7 @@ def parse_params(line, param_list):
             requested_params.append(elem)
     return ",".join(requested_params)
 
-inF = open(sys.argv[1])
+inF = open(latlonfile, "r")
 lines = inF.read().lower().replace(" ", "").split("\n")
 inF.close()
 
@@ -171,8 +184,8 @@ for i in range(num_files_requested):
         else:
             outFname = names[i]
         text_str = res.content
-        os.chdir ("../output/Download")
-        outF = open(outFname, 'wb')
+        # os.chdir(Output_dir)
+        outF = open(os.path.join(Output_dir, outFname), 'wb')
         outF.write(text_str)
         outF.close()
         res.close()
