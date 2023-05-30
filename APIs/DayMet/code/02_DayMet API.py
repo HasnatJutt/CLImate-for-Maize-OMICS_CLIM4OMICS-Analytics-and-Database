@@ -1,4 +1,9 @@
 #! /usr/bin/env python
+"""
+@author: psarzaeim2, Hasnat
+
+Updated on May 2023
+"""
 
 import os
 import sys
@@ -112,8 +117,8 @@ else:
     STARTYEAR = 1980
 
 df = pd.read_csv(os.path.join(Input_dir, "lat_lon.csv"))
-Year_list = df ["Year"].tolist ()
-ENDYEAR = max (Year_list)
+Year_list = df["Year"].tolist ()
+ENDYEAR = max(Year_list)
 #ENDYEAR   = 2018
 
 NO_NAME = "NULL"
