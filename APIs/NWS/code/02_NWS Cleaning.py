@@ -12,6 +12,7 @@ Updated on May 2023
 # Import necessary libraries
 # =============================================================================
 import os
+import pathlib
 import sys
 import glob
 import argparse
@@ -174,4 +175,4 @@ for file in NWS02_files:
     
     dF = pd.DataFrame (list(zip(station_list, Lat_list, Lon_list)), columns = ["Station", "lat", "lon"])
     dF.index.name = "Record Number"
-    dF.to_csv(os.path.join(Output_dir, "../NWS_lat_lon.csv"))
+    dF.to_csv(os.path.join(pathlib.Path(Output_dir).parent, "NWS_lat_lon.csv"))
