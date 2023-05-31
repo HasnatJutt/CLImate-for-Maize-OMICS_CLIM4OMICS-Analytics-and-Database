@@ -3,39 +3,83 @@ from __future__ import print_function
 """
 Created on Thu Oct 17 10:24:04 2019
 
-@author: psarzaeim2
+@author: psarzaeim2, Hasnat
+
+Updated on May 2023
 """
 
 ## Reading data from IEM website for certain NWS station names 
 # =============================================================================
 # Import necessary libraries
 # =============================================================================
+import csv
+import os
+import sys
+import argparse
 import json
 import time
 import datetime
 import pandas as pd
-import csv
-import os
+from urllib.request import urlopen
 
-# =============================================================================
-# Input and Output directories
-# =============================================================================
-path = os.chdir ("../../../G2F data preprocessing/Meta/output/")
-Input_dir = os.getcwd ().replace ("\\", "/")
-Input_dir = Input_dir + "/"
-Output_dir = os.chdir ("../../../APIs/NWS/output/Download/")
-Output_dir = os.getcwd ().replace ("\\", "/")
-Output_dir = Output_dir + "/"
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--input', help='Path of Input Directory from Current Path', required=False)
+parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path', required=False)
+parser.add_argument('-m', '--metafile', help='Path of Lat Lon text file from Current Path', required=False)
+parser.add_argument('-sy', '--startyear', help='Start Year e.g 1980', required=False)
+args = parser.parse_args()
+def output_fdir(argument_path):
+    dir_path = os.path.abspath(argument_path)
+    if os.path.exists(dir_path):
+        dir_name = dir_path
+    else:
+        os.makedirs(dir_path)
+        dir_name = dir_path
+    return dir_name
+
+
+if args.input is not None:
+    Input_path = os.path.abspath(args.input)
+    if os.path.exists(Input_path):
+        Input_dir = Input_path
+        if args.output is not None:
+            Output_dir = output_fdir(args.output)
+        else:
+            Output_path = os.path.join(Input_path, '../../../APIs/NWS/output/Download')
+            Output_dir = output_fdir(Output_path)
+    else:
+        print(
+            f'The input directory {args.input} does not exists on system path. Correct the Input directory, provided directory has {Input_path} path')
+
+elif os.path.exists("../../../G2F data preprocessing/Meta/output/"):
+    Input_dir = "../../../G2F data preprocessing/Meta/output/"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = '../../../APIs/NWS/output/Download'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("G2F data preprocessing/Meta/output/"):
+    Input_dir = "G2F data preprocessing/Meta/output/"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = 'APIs/NWS/output/Download'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("../G2F data preprocessing/Meta/output/"):
+    Input_dir = "../G2F data preprocessing/Meta/output/"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = '../APIs/NWS/output/Download'
+        Output_dir = output_fdir(Output_path)
+else:
+    print(
+        "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+    sys.exit()
+
 print("Input directory = ", Input_dir)
 print ("Output directory ", Output_dir)
-    
-# =============================================================================
-# Get the URL
-# =============================================================================
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
+
 
 # Number of attempts to download data
 MAX_ATTEMPTS = 6
@@ -81,7 +125,7 @@ def get_stations_from_filelist(filename):
 def get_stations_from_networks():
     """Build a station list by using a bunch of IEM networks."""
     stations = []
-    df = pd.read_csv (Input_dir + "lat_lon.csv", index_col = "Experiment")
+    df = pd.read_csv(os.path.join(Input_dir, "lat_lon.csv"), index_col = "Experiment")
     states = df["State"].unique()
 
     # IEM quirk to have Iowa AWOS sites in its own labeled network
@@ -120,13 +164,13 @@ def main():
         data = download_data(uri)
         outfn = station
         
-        out = open(Output_dir + outfn, 'w')
+        out = open(os.path.join(Output_dir, outfn), 'w')
         out.write(data)
         out.close()
-        with open(Output_dir + outfn, 'r') as in_file:
-            stripped = stripped = (line.strip() for line in in_file)
+        with open(os.path.join(Output_dir, outfn), 'r') as in_file:
+            stripped = (line.strip() for line in in_file)
             lines = (line.split(",") for line in stripped if line)
-            with open(Output_dir + outfn + ".csv", 'w') as out_file:
+            with open(os.path.join(Output_dir, outfn + ".csv"), 'w') as out_file:
                 writer = csv.writer(out_file)
                 writer.writerows(lines)
 #                print("Save")

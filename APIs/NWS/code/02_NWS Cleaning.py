@@ -2,7 +2,9 @@
 """
 Created on Fri Oct 18 12:05:29 2019
 
-@author: psarzaeim2
+@author: psarzaeim2, Hasnat
+
+Updated on May 2023
 """
 
 ## Reading and cleanning NWS data
@@ -10,51 +12,88 @@ Created on Fri Oct 18 12:05:29 2019
 # Import necessary libraries
 # =============================================================================
 import os
+import sys
 import glob
+import argparse
 import pandas as pd
 import csv
 
 # =============================================================================
 # Input and Output directories
 # =============================================================================
-path = os.chdir ("../output/Download")
-Input_dir = os.getcwd ().replace ("\\", "/")
-Input_dir = Input_dir + "/"
-Output_dir = os.chdir ("../Clean")
-Output_dir = os.getcwd ().replace ("\\", "/")
-Output_dir = Output_dir + "/"
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--input', help='Path of Input Directory from Current Path', required=False)
+parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path', required=False)
+args = parser.parse_args()
+def output_fdir(argument_path):
+    dir_path = os.path.abspath(argument_path)
+    if os.path.exists(dir_path):
+        dir_name = dir_path
+    else:
+        os.makedirs(dir_path)
+        dir_name = dir_path
+    return dir_name
+
+
+if args.input is not None:
+    Input_path = os.path.abspath(args.input)
+    if os.path.exists(Input_path):
+        Input_dir = Input_path
+        if args.output is not None:
+            Output_dir = output_fdir(args.output)
+        else:
+            Output_path = os.path.join(Input_path, '../Clean')
+            Output_dir = output_fdir(Output_path)
+    else:
+        print(
+            f'The input directory {args.input} does not exists on system path. Correct the Input directory, provided directory has {Input_path} path')
+
+elif os.path.exists("../../../APIs/NWS/output/Download"):
+    Input_dir = "../../../APIs/NWS/output/Download"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = '../../../APIs/NWS/output/Clean'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("APIs/NWS/output/Download"):
+    Input_dir = "APIs/NWS/output/Download"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = 'APIs/NWS/output/Clean'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("../APIs/NWS/output/Download"):
+    Input_dir = "../APIs/NWS/output/Download"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = '../APIs/NWS/output/Clean'
+        Output_dir = output_fdir(Output_path)
+else:
+    print(
+        "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+    sys.exit()
+
 print("Input directory = ", Input_dir)
 print ("Output directory ", Output_dir)
-       
-# =============================================================================
-# Removing txt files    
-# =============================================================================
-all_files = os.listdir (Input_dir)
-#print(all_files)
-for file in all_files:
-    if not file.endswith (".csv"):
-        os.remove (os.path.join (Input_dir, file))
 
 # =============================================================================
 # Removing csv files less that 1 KB (Empty csv files)
 # =============================================================================
-for (dirpath, dirnames, filenames) in os.walk (Input_dir):
-    for file in filenames:
-        fullpath = os.path.join(Input_dir, file)
-        if os.path.getsize(fullpath) < 1 * 1024: 
-#            print("remove")
-            os.remove(fullpath)
-#        
+all_files = glob.glob(os.path.abspath(os.path.join(Input_dir,'*.csv')))
+for file in all_files:
+    if os.stat(file).st_size < 1024:
+        os.remove(file)
+
 # =============================================================================
 # Reading and fixing each NWS station file as data frame
 # =============================================================================
-os.chdir (Input_dir)
-extension = "csv"
-CSV_files = [f for f in glob.glob ("*.{}".format (extension))]
+
+CSV_files = glob.glob(os.path.abspath(os.path.join(Input_dir,'*.csv')))
 
 for filename in CSV_files:
-    with open (Input_dir + filename) as in_file:
-        with open (Output_dir + filename, "w", newline = "") as out_file:
+    with open (filename) as in_file:
+        with open (os.path.join(Output_dir, os.path.basename(filename)), "w", newline = "") as out_file:
             next (in_file)
             next (in_file)
             next (in_file)
@@ -70,9 +109,9 @@ for filename in CSV_files:
                 if any (row):
                     writer.writerow (row)
 
-NWS_files = os.listdir (Output_dir)
+NWS_files = glob.glob(os.path.abspath(os.path.join(Output_dir,'*.csv')))
 for filename in NWS_files:
-    df = pd.read_csv (Output_dir + filename)      
+    df = pd.read_csv (filename)
     df = df[["station", "valid", "lat", "lon", "tmpf", "dwpf", "relh", "drct", "sknt", "p01i", "alti"]] 
     df.rename (columns = {"valid":"Date", "tmpf":"Temperature [F]", "dwpf":"Dew Point [F]", "relh":"Relative Humidity [%]", 
                           "p01i":"Rainfall [in]", "sknt":"Wind Speed [knot]", "drct":"Wind Direction [degrees]", "alti":"Pressure [in]"}, inplace = True) 
@@ -114,18 +153,17 @@ for filename in NWS_files:
 #    df["Date"] = df["Date"].str.replace("/","-")
 #    df["Day_of_Year"] = df["Date"].dt.dayofyear
     
-    df.to_csv (Output_dir + filename)  
+    df.to_csv(filename)
 
 
 station_list = []
 Lat_list = []
 Lon_list = []
 
-NWS02_files = os.listdir (Output_dir)
+NWS02_files = glob.glob(os.path.abspath(os.path.join(Output_dir,'*.csv')))
 for file in NWS02_files:
-    
-    df = pd.read_csv (Output_dir + file)    
-    station = df.iloc [0,1]      
+    df = pd.read_csv ( file)
+    station = df.iloc[0,1]
     lat = df.iloc [0,2] 
     lon = df.iloc [0,3]
     
@@ -136,6 +174,4 @@ for file in NWS02_files:
     
     dF = pd.DataFrame (list(zip(station_list, Lat_list, Lon_list)), columns = ["Station", "lat", "lon"])
     dF.index.name = "Record Number"
-    os.chdir ("../")
-    dF.to_csv ("NWS_lat_lon" + ".csv")
-    os.chdir (Output_dir)
+    dF.to_csv(os.path.join(Output_dir, "../NWS_lat_lon.csv"))

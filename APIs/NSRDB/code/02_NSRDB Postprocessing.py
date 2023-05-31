@@ -81,9 +81,10 @@ print("Output directory ", Output_dir)
 # =============================================================================
 # Pivot tables
 # =============================================================================    
-for filename in os.listdir(Input_dir):
+file_list = glob.glob(os.path.abspath(os.path.join(Input_dir,'*.csv')))
+for filename in file_list:
     #    print (Output_dir + filename)
-    df = pd.read_csv(Input_dir + filename, index_col="Record Number")
+    df = pd.read_csv(filename, index_col="Record Number")
 
     Variables = ["Temperature [C]", "Dew Point [C]", "Solar Radiation [W/m2]", "Wind Speed [m/s]", "Pressure [mb]",
                  "Relative Humidity [%]", "Wind Direction [degrees]", "Precipitable Water [mm]"]
