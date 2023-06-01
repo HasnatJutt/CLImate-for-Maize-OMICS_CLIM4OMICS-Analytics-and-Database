@@ -2,7 +2,9 @@
 """
 Created on Tue Apr 21 00:30:50 2020
 
-@author: psarzaeim2
+@author: psarzaeim2, Hasnat
+
+Updated on May 2023
 """
 
 ## Reading data from data sources  
@@ -10,6 +12,10 @@ Created on Tue Apr 21 00:30:50 2020
 # Import necessary libraries
 # =============================================================================
 import os
+import pathlib
+import sys
+import argparse
+import glob
 import pandas as pd
 import numpy as np
 from functools import reduce
@@ -32,36 +38,163 @@ from sklearn.feature_selection import f_regression
 # =============================================================================
 # Input and Output directories
 # =============================================================================
-Input_dir = os.chdir ("../../../Database/output/H/more")
-Input_dir = os.getcwd ().replace ("\\", "/")
-Input_dir = Input_dir + "/"
-Output_dir = os.chdir ("../../../../ML/ANN/output/H/pairplots")
-Output_dir = os.getcwd ().replace ("\\", "/")
-Output_dir = Output_dir + "/"
-Output_dir1 = os.chdir ("../predictions")
-Output_dir1 = os.getcwd ().replace ("\\", "/")
-Output_dir1 = Output_dir1 + "/"
-Output_dir2 = os.chdir ("../y_predicted")
-Output_dir2 = os.getcwd ().replace ("\\", "/")
-Output_dir2 = Output_dir2 + "/"
-Output_dir4 = os.chdir ("../loss")
-Output_dir4 = os.getcwd ().replace ("\\", "/")
-Output_dir4 = Output_dir4 + "/"
-Output_dir3 = os.chdir ("../")
-Output_dir3 = os.getcwd ().replace ("\\", "/")
-Output_dir3 = Output_dir3 + "/"
-Output_dir5 = os.chdir ("../Performance")
-Output_dir5 = os.getcwd ().replace ("\\", "/")
-Output_dir5 = Output_dir5 + "/"
-Output_dir10 = os.chdir ("../../../../Database/output/All_Files")
-Output_dir10 = os.getcwd ().replace ("\\", "/")
-Output_dir10 = Output_dir10 + "/"
-Input_dir1 = os.chdir ("../../../G2F data preprocessing/Meta/output")
-Input_dir1 = os.getcwd ().replace ("\\", "/")
-Input_dir1 = Input_dir1 + "/"
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--input', help='Path of Input Directory from Current Path', required=False)
+parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path', required=False)
+parser.add_argument('-m', '--meta', help='Path of Meta Files Input Directory1 from Current Path', required=False)
+parser.add_argument('-o1', '--output', help='Path of Output Directory (Predication) from Current Path', required=False)
+parser.add_argument('-o2', '--output', help='Path of Output Directory (Y_Predication) from Current Path', required=False)
+parser.add_argument('-o3', '--output', help='Path of Output Directory (Loss) from Current Path', required=False)
+parser.add_argument('-o4', '--output', help='Path of Output Directory from Current Path', required=False)
+parser.add_argument('-o5', '--output', help='Path of Output Directory (Performance) from Current Path', required=False)
+parser.add_argument('-o10', '--output', help='Path of Output Directory All files (Database/All Files) from Current Path', required=False)
+args = parser.parse_args()
 
+
+def output_fdir(argument_path):
+    dir_path = os.path.abspath(argument_path)
+    if os.path.exists(dir_path):
+        dir_name = dir_path
+    else:
+        os.makedirs(dir_path)
+        dir_name = dir_path
+    return dir_name
+
+
+if args.input is not None:
+    Input_path = os.path.abspath(args.input)
+    if os.path.exists(Input_path):
+        Input_dir = Input_path
+        if args.output is not None:
+            Output_dir = output_fdir(args.output)
+        else:
+            Output_path = os.path.join(Input_path, '../../../ML/ANN/output/H/pairplots')
+            Output_dir = output_fdir(Output_path)
+    else:
+        print(
+            f'The input directory {args.input} does not exists on system path. Correct the Input directory, provided directory has {Input_path} path')
+
+elif os.path.exists("../../../Database/output/H/more"):
+    Input_dir = "../../../Database/output/H/more"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = '../../../ML/ANN/output/H/pairplots'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("Database/output/H/more"):
+    Input_dir = "Database/output/H/more"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = 'ML/ANN/output/H/pairplots'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("../Database/output/H/more"):
+    Input_dir = "../Database/output/H/more"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    else:
+        Output_path = '../ML/ANN/output/H/pairplots'
+        Output_dir = output_fdir(Output_path)
+else:
+    print(
+        "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+    sys.exit()
 print("Input directory = ", Input_dir)
-print ("Output directory = ", Output_dir3)
+print("Output directory ", Output_dir)
+if args.meta is not None:
+    Input_path1 = os.path.abspath(args.meta)
+    if os.path.exists(Input_path1):
+        Input_dir1 = Input_path1
+    else:
+        print(
+            f'The input directory {args.meta} does not exists on system path. Correct the Input directory, provided directory has {Input_path1} path')
+
+elif os.path.exists("../../../G2F data preprocessing/Meta/output"):
+    Input_dir1 = "../../../G2F data preprocessing/Meta/output"
+
+elif os.path.exists("G2F data preprocessing/Meta/output"):
+    Input_dir1 = "G2F data preprocessing/Meta/output"
+
+elif os.path.exists("../G2F data preprocessing/Meta/output"):
+    Input_dir1 = "../G2F data preprocessing/Meta/output"
+elif os.path.exists("../../G2F data preprocessing/Meta/output"):
+    Input_dir1 = "../../G2F data preprocessing/Meta/output"
+else:
+    print(
+        "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+
+if args.output1 is not None:
+    Output_dir1 = output_fdir(args.output1)
+else:
+    if Output_dir is not None:
+        Output_path1 = os.path.join(pathlib.Path(Output_dir).parent, 'predictions')
+        Output_dir1 = output_fdir(Output_path1)
+    else:
+        print("Neither Output Directory set nor Output for Predication is provided in argument")
+if args.output2 is not None:
+    Output_dir2 = output_fdir(args.output2)
+else:
+    if Output_dir is not None:
+        Output_path2 = os.path.join(pathlib.Path(Output_dir).parent, 'y_predicted')
+        Output_dir2 = output_fdir(Output_path2)
+    else:
+        print("Neither Output Directory set nor Output for Y_Predication is provided in argument")
+
+if args.output3 is not None:
+    Output_dir3 = output_fdir(args.output3)
+else:
+    if Output_dir is not None:
+        Output_path3 = pathlib.Path(Output_dir).parent
+        Output_dir3 = output_fdir(Output_path3)
+    else:
+        print("Neither Output Directory set nor Output for Output is provided in argument")
+if args.output4 is not None:
+    Output_dir4 = output_fdir(args.output4)
+else:
+    if Output_dir is not None:
+        Output_path4 = os.path.join(pathlib.Path(Output_dir).parent, 'loss')
+        Output_dir4 = output_fdir(Output_path4)
+    else:
+        print("Neither Output Directory set nor Output for Loss is provided in argument")
+
+if args.output5 is not None:
+    Output_dir5 = output_fdir(args.output5)
+else:
+    if Output_dir is not None:
+        Output_path5 = os.path.join(pathlib.Path(Output_dir).parent.parent, 'Performance')
+        Output_dir5 = output_fdir(Output_path5)
+    else:
+        print("Neither Output Directory set nor Output for Performance is provided in argument")
+if args.output10 is not None:
+    Output_dir10 = output_fdir(args.output10)
+else:
+    if Output_dir is not None:
+        Output_path10 = os.path.join(pathlib.Path(Output_dir).parent.parent, 'Performance')
+        Output_dir10 = output_fdir(Output_path10)
+    else:
+        print("Neither Output Directory set nor Output for Performance is provided in argument")
+if args.output10 is not None:
+    Output_path10 = os.path.abspath(args.output10)
+    if os.path.exists(Output_path10):
+        Output_dir10 = Output_path10
+    else:
+        print(
+            f'The input directory {args.output10} does not exists on system path. Correct the Input directory, provided directory has {Output_path10} path')
+
+elif os.path.exists("../../../Database/output/All_Files"):
+    Output_dir10 = "../../../Database/output/All_Files"
+
+elif os.path.exists("Database/output/All_Files"):
+    Output_dir10 = "Database/output/All_Files"
+
+elif os.path.exists("../Database/output/All_Files"):
+    Output_dir10 = "../Database/output/All_Files"
+elif os.path.exists("../../Database/output/All_Files"):
+    Output_dir10 = "../../Database/output/All_Files"
+else:
+    print(
+        "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+
 
 # =============================================================================
 # Artificial Neural Network Design
@@ -74,10 +207,11 @@ Abb = "H"
 variable = "Relative Humidity [%]"
 
 # Data Preprocessing
-files = os.listdir (Input_dir)
-for file in files:
+files = glob.glob(os.path.abspath(os.path.join(Input_dir, '*.csv')))
+for filename in files:
+    file = os.path.basename(filename)
     Experiments_list.append (file [:-4])
-    df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
+    df = pd.read_csv (filename, index_col = "Day of Year [Local]")
     df_new = df [df.isnull().any(1)]
     df_new_index = df_new.index.values.tolist()
     df_index = pd.DataFrame (df_new_index, columns = ["Day of Year [Local]"])
@@ -384,14 +518,16 @@ Merge.to_csv (Output_dir5 + Abb + "_Performance" + ".csv", index = None)
 # =============================================================================
 # Complete Database
 # =============================================================================
-files = os.listdir (Input_dir)
-yfiles = os.listdir (Output_dir2)
-for file in files:
-    for yfile in yfiles:
+files = glob.glob(os.path.abspath(os.path.join(Input_dir, '*.csv')))
+yfiles = glob.glob(os.path.abspath(os.path.join(Output_dir2, '*.csv')))
+for filename in files:
+    for yfilename in yfiles:
+        file = os.path.basename(filename)
+        yfile = os.path.basename(yfilename)
         if file [:-4] == yfile [:-4]:
-            dF = pd.read_csv (Input_dir + file)
+            dF = pd.read_csv (filename)
             dF = dF.iloc [:,:4]
-            dy = pd.read_csv (Output_dir2 + yfile)
+            dy = pd.read_csv (yfilename)
             complete = pd.concat ([dF,dy], join = "inner")
             complete.sort_values (by = ["Day of Year [Local]"], inplace = True)
             complete.dropna (inplace = True)
