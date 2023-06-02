@@ -455,16 +455,17 @@ for file in files:
             CS = ["NSRDB ", "DayMet ", "NWS "]
             if CS [0] + variable in df:
                 y1 = df [CS [0] + variable]
-                    
-                Corr1 = r2_score (y, y1)
-                MAE1 = mean_absolute_error (y, y1)
-                MSE1 = mean_squared_error (y, y1)
-                RMSE1 = np.sqrt (MSE1)
-                
-                Corr1_list.append (Corr1)
-                MAE1_list.append (MAE1)
-                MSE1_list.append (MSE1)
-                RMSE1_list.append (RMSE1)
+                try:
+                    Corr1 = r2_score (y, y1)
+                    MAE1 = mean_absolute_error (y, y1)
+                    MSE1 = mean_squared_error (y, y1)
+                    RMSE1 = np.sqrt (MSE1)
+                    Corr1_list.append (Corr1)
+                    MAE1_list.append (MAE1)
+                    MSE1_list.append (MSE1)
+                    RMSE1_list.append (RMSE1)
+                except:
+                    pass
                 
             
             if CS [1] + variable in df:
@@ -474,27 +475,28 @@ for file in files:
                     MAE2 = mean_absolute_error (y, y2)
                     MSE2 = mean_squared_error (y, y2)
                     RMSE2 = np.sqrt (MSE2)
+                    Corr2_list.append (Corr2)
+                    MAE2_list.append (MAE2)
+                    MSE2_list.append (MSE2)
+                    RMSE2_list.append (RMSE2)
                 except:
                     pass
-                
-                Corr2_list.append (Corr2)
-                MAE2_list.append (MAE2)
-                MSE2_list.append (MSE2)
-                RMSE2_list.append (RMSE2)
                 
                 
             if CS [2] + variable in df:
                 y3 = df [CS [2] + variable]
-                    
-                Corr3 = r2_score (y, y3)
-                MAE3 = mean_absolute_error (y, y3)
-                MSE3 = mean_squared_error (y, y3)
-                RMSE3 = np.sqrt (MSE3)
-                
-                Corr3_list.append (Corr3)
-                MAE3_list.append (MAE3)
-                MSE3_list.append (MSE3)
-                RMSE3_list.append (RMSE3)
+                try:
+                    Corr3 = r2_score(y, y3)
+                    MAE3 = mean_absolute_error(y, y3)
+                    MSE3 = mean_squared_error(y, y3)
+                    RMSE3 = np.sqrt(MSE3)
+
+                    Corr3_list.append(Corr3)
+                    MAE3_list.append(MAE3)
+                    MSE3_list.append(MSE3)
+                    RMSE3_list.append(RMSE3)
+                except:
+                    pass
                 
 df_performance = pd.DataFrame ({"Experiment": pd.Series (files),
                 "Corr_NSRDB": pd.Series (Corr1_list), "MAE_NSRDB": pd.Series (MAE1_list), "MSE_NSRDB": pd.Series (MSE1_list), "RMSE_NSRDB": pd.Series (RMSE1_list),
