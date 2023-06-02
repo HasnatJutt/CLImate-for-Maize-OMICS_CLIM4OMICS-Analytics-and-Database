@@ -13,6 +13,7 @@ Updated on May 2023
 # =============================================================================
 import os
 import glob
+import math
 import pathlib
 import argparse
 import statistics
@@ -36,7 +37,7 @@ parser.add_argument('-i1', '--input1', help='Path of Input Directory1 (NSRDB) fr
 parser.add_argument('-i2', '--input2', help='Path of Input Directory2 (DayMet) from Current Path', required=False)
 parser.add_argument('-i3', '--input3', help='Path of Input Directory3 (NWS) from Current Path', required=False)
 parser.add_argument('-o1', '--output1', help='Path of Output Directory1 (Uncertainty) from Current Path', required=False)
-parser.add_argument('-o2', '--output1', help='Path of Output Directory1 (Uncertainty Plots) from Current Path', required=False)
+parser.add_argument('-o2', '--output2', help='Path of Output Directory1 (Uncertainty Plots) from Current Path', required=False)
 args = parser.parse_args()
 
 
@@ -101,11 +102,11 @@ elif os.path.exists("../../Database/output/All_Files"):
     else:
         print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
     if os.path.exists("../../APIs/DayMet/output/DayMet"):
-        Input_dir1 = "../../APIs/DayMet/output/DayMet"
+        Input_dir2 = "../../APIs/DayMet/output/DayMet"
     else:
         print(f"The Directory APIs/DayMet/output/DayMet do not exits")
     if os.path.exists("../../APIs/NWS/output/NWS"):
-        Input_dir1 = "../../APIs/NWS/output/NWS"
+        Input_dir3 = "../../APIs/NWS/output/NWS"
     else:
         print(f"The Directory APIs/NWS/output/NWS do not exits")
     if args.output1 is not None:
@@ -125,11 +126,11 @@ elif os.path.exists("Database/output/All_Files"):
     else:
         print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
     if os.path.exists("APIs/DayMet/output/DayMet"):
-        Input_dir1 = "APIs/DayMet/output/DayMet"
+        Input_dir2 = "APIs/DayMet/output/DayMet"
     else:
         print(f"The Directory APIs/DayMet/output/DayMet do not exits")
     if os.path.exists("APIs/NWS/output/NWS"):
-        Input_dir1 = "APIs/NWS/output/NWS"
+        Input_dir3 = "APIs/NWS/output/NWS"
     else:
         print(f"The Directory APIs/NWS/output/NWS do not exits")
     if args.output1 is not None:
@@ -150,11 +151,11 @@ elif os.path.exists("../Database/output/All_Files"):
     else:
         print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
     if os.path.exists("../APIs/DayMet/output/DayMet"):
-        Input_dir1 = "../APIs/DayMet/output/DayMet"
+        Input_dir2 = "../APIs/DayMet/output/DayMet"
     else:
         print(f"The Directory APIs/DayMet/output/DayMet do not exits")
     if os.path.exists("../APIs/NWS/output/NWS"):
-        Input_dir1 = "../APIs/NWS/output/NWS"
+        Input_dir3 = "../APIs/NWS/output/NWS"
     else:
         print(f"The Directory APIs/NWS/output/NWS do not exits")
     if args.output1 is not None:
@@ -182,10 +183,11 @@ SC3 = os.listdir (Input_dir3)
 
 Abb = "R"
 variable = "Rainfall [mm]"
-files = os.listdir (Output_dir4)
-for file in files:
+files = glob.glob(os.path.abspath(os.path.join(Input_dir, '*.csv')))
+for filename in files:
+    file = os.path.basename(filename)
     if file [0] == Abb:
-        df = pd.read_csv (Output_dir4 + file)
+        df = pd.read_csv(os.path.join(Input_dir, file))
         df.rename(columns={'Day': 'Day of Year [Local]'}, inplace=True)
         dfs = [df]
         
@@ -201,7 +203,7 @@ for file in files:
         for j in SC2:
             if j == file:
                 
-                data2 = pd.read_csv (Input_dir2 + j, usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable])
+                data2 = pd.read_csv (os.path.join(Input_dir2 , j), usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable])
                 data2.rename (columns = {variable:"DayMet " + variable,
                                           "Min " + variable:"Min DayMet " + variable,
                                           "Max " + variable:"Max DayMet " + variable}, inplace = True)
@@ -210,7 +212,7 @@ for file in files:
         for k in SC3:
             if k == file:
                                         
-                data3 = pd.read_csv (Input_dir3 + k, usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable])
+                data3 = pd.read_csv (os.path.join(Input_dir3 , k), usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable])
                 data3.rename (columns = {variable:"NWS " + variable,
                                           "Min " + variable:"Min NWS " + variable,
                                           "Max " + variable:"Max NWS " + variable}, inplace = True)      
@@ -219,7 +221,7 @@ for file in files:
                         
         df_merged = reduce (lambda left, right: pd.merge (left, right, on = ["Day of Year [Local]"], how = "inner"), dfs)
                             
-        df_merged.to_csv (Output_dir1 + file, index = None) 
+        df_merged.to_csv (os.path.join(Output_dir1 , file), index = None)
         
 # =============================================================================
 # Error
@@ -231,7 +233,7 @@ Err3_list = []
 files = os.listdir (Output_dir1)
 for file in files:
     if file [0] == Abb:
-        df = pd.read_csv (Output_dir1 + file)
+        df = pd.read_csv (os.path.join(Output_dir1 , file))
         
         col_list = list (df)
         # print(file)
@@ -255,7 +257,7 @@ for file in files:
             # Err3 = statistics.mean(Err3)
             Err3_list.append (Err3)
 
-    df.to_csv (Output_dir1 + file, index = None)
+    df.to_csv (os.path.join(Output_dir1 , file), index = None)
     
 # Err1_list_flat = [item for sublist in Err1_list for item in sublist] 
 Err2_list_flat = [item for sublist in Err2_list for item in sublist]
@@ -284,5 +286,5 @@ plt.xticks(fontsize = 10)
 plt.legend (fontsize = 8)
 
 
-plt.savefig (Output_dir2 + "PDF " + "Error" + ".png", dpi = 400) 
+plt.savefig (os.path.join(Output_dir2 , "PDF " + "Error" + ".png"), dpi = 400)
 plt.close ()
