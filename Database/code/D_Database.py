@@ -172,11 +172,11 @@ elif os.path.exists("../../G2F data preprocessing/Environment/output/G2F Separat
     else:
         print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
     if os.path.exists("../../APIs/DayMet/output/DayMet"):
-        Input_dir1 = "../../APIs/DayMet/output/DayMet"
+        Input_dir2 = "../../APIs/DayMet/output/DayMet"
     else:
         print(f"The Directory APIs/DayMet/output/DayMet do not exits")
     if os.path.exists("../../APIs/NWS/output/NWS"):
-        Input_dir1 = "../../APIs/NWS/output/NWS"
+        Input_dir3 = "../../APIs/NWS/output/NWS"
     else:
         print(f"The Directory APIs/NWS/output/NWS do not exits")
     if args.output1 is not None:
@@ -236,11 +236,11 @@ elif os.path.exists("G2F data preprocessing/Environment/output/G2F Separating"):
     else:
         print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
     if os.path.exists("APIs/DayMet/output/DayMet"):
-        Input_dir1 = "APIs/DayMet/output/DayMet"
+        Input_dir2 = "APIs/DayMet/output/DayMet"
     else:
         print(f"The Directory APIs/DayMet/output/DayMet do not exits")
     if os.path.exists("APIs/NWS/output/NWS"):
-        Input_dir1 = "APIs/NWS/output/NWS"
+        Input_dir3 = "APIs/NWS/output/NWS"
     else:
         print(f"The Directory APIs/NWS/output/NWS do not exits")
     if args.output1 is not None:
@@ -300,11 +300,11 @@ elif os.path.exists("../G2F data preprocessing/Environment/output/G2F Separating
     else:
         print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
     if os.path.exists("../APIs/DayMet/output/DayMet"):
-        Input_dir1 = "../APIs/DayMet/output/DayMet"
+        Input_dir2 = "../APIs/DayMet/output/DayMet"
     else:
         print(f"The Directory APIs/DayMet/output/DayMet do not exits")
     if os.path.exists("../APIs/NWS/output/NWS"):
-        Input_dir1 = "../APIs/NWS/output/NWS"
+        Input_dir3 = "../APIs/NWS/output/NWS"
     else:
         print(f"The Directory APIs/NWS/output/NWS do not exits")
     if args.output1 is not None:
