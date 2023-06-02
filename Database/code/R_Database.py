@@ -424,7 +424,6 @@ for filename in G2F_files:
 # Performance Metrics
 # =============================================================================
 files = os.listdir (Output_dir1)
-
 Corr1_list = []
 MAE1_list = []
 MSE1_list = []
