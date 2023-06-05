@@ -27,6 +27,7 @@ Return:
     Five output files all in comma seprated format (.csv)    
      
 Parameters:
+        These parameters can be provided using flags or by changing script file
         Common:
             :data_input_dir: The Input directory location or path of Input Directory.
             :type data_input_dir: str
@@ -50,9 +51,9 @@ Parameters:
             :type prev_file: str or bool
             :sufix_str: Suffix add in the filenames of already existed files with same name
             :type sufix_str: str
-            :gene_limit: The value that is used how many number of genes or number of rows process
+            :hybrid_limit: The value that is used how many number of genes or number of rows process
                 (default is 100000. In G2F initiative 1577 gene exists or 1579 rows)
-            :type gene_limit: int            
+            :type hybrid_limit: int            
             :ignor_rows: The numbers of rows ignor or number of rows before header row. It shows 
                 header header row location. (default is 1)
             :type ignor_rows: int             
@@ -65,7 +66,7 @@ Parameters:
                 keywords values within col_check limit (default is None)
             :type incase_multikey_no: int
 
-ToDo:
+To Do:
     Compulsary:
         Set Input Directory Path in data_input_dir variable.
         Set Output Directory Path in data_output_dir variable.
@@ -84,8 +85,8 @@ ToDo:
         The default value of sufix_str is datetime
     Advance parameters:
         Change these parameters in the function statement. 
-            To set or process the particular number of rows or number of genes set gene_limit value.
-            Default value of gene_limit: 100,000. 
+            To set or process the particular number of rows or number of genes set hybrid_limit value.
+            Default value of hybrid_limit: 100,000. 
                 It means it will process upto 100,001 + ignor_rows. First 2nd row is header row. 
             To set how many rows ignor from the start of file set value of ignor_rows.
             Default value of ignor_row: 1.
@@ -113,6 +114,7 @@ ToDo:
  @email: hhasnat44868@gmail.com
  @status: Production
  @date: 2022/09/27
+ @update: 2023/06/02
 """
 # import libraries
 try:
@@ -120,6 +122,7 @@ try:
     import io
     import sys
     import profile
+    import argparse
     import platform
     from multiprocessing import Process, Pool
     from csv import writer, reader
@@ -128,21 +131,21 @@ except ImportError:
     print('Libraries not found')
 # To change other parameters change values in function
 # Set input directory
-data_input_dir = "../../../File Upload/Genotype"
+data_input_dir = None
 # Set output directory
-data_output_dir = "../output"
+data_output_dir = None
 # Provide input or makers file name
-in_file = os.path.join(data_input_dir, "Markers.txt").replace("\\", "/")
+input_file = "Markers.txt"
 # Provide name of first output or SNPs file name
-snp_file = os.path.join(data_output_dir, "SNPs.csv").replace("\\", "/")
+snp_file_name = "SNPs.csv"
 # Provide name of meta output or Markers List file name
-gid_file = os.path.join(data_output_dir, "GIDs2.csv").replace("\\", "/")
+gid_file_name = "GIDs.csv"
 # Provide name of meta output or Nan Frequencies file name
-freq_file = os.path.join(data_output_dir, "NaNs.freq.csv").replace("\\", "/")
+freq_file_name = "NaNs.freq.csv"
 # Provide name of meta output or Nan Frequency Percentage file name
-precfreq_file = os.path.join(data_output_dir, "percentage.NaNs.csv").replace("\\", "/")
+precfreq_file_name = "percentage.NaNs.csv"
 # Provide name of final output or G2E input file name
-x_file = os.path.join(data_output_dir, "X.csv").replace("\\", "/")
+x_file_name = "X.csv"
 
 ## Preserve previous files with same names.
 # You want to overwrite files or delete if exists then set value of prev_file to No otherwise set value to yes
@@ -150,7 +153,169 @@ prev_file = 'no'  # The values are yes or True and No or False
 # Add the sufix you want to add in the ebd of your files otherwise today's date will be added
 # Underscore _ between file name and suffix string will be added by default
 sufix_str = ''
+# Limit number of lines process
+hybrid_process_limit = None
+# Header Rows or Rows Ignored
+ignore_no_rows = None
+# Start Keyword Name
+start_keyword_name = None
+# Number of Columns Check to Search Keyword
+no_col_check = None
 # Delete output files if already exits with the same name
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--input', help='Path of Input Directory from Current Path (Upload Geotype)', required=False)
+parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path (G2F processing Genotype Output)', required=False)
+parser.add_argument('-mf', '--input_file_name', help='Name of Input File (Markers.txt)', required=False)
+parser.add_argument('-sf', '--output_file_snp', help='Name of Output File (SNPs.csv)', required=False)
+parser.add_argument('-gf', '--output_file_gid', help='Name of Output File (GIDs.csv)', required=False)
+parser.add_argument('-nf', '--output_file_nan', help='Name of Output File (NaNs.freq.csv)', required=False)
+parser.add_argument('-pf', '--output_file_per', help='Name of Output File (percentage.NaNs.csv)', required=False)
+parser.add_argument('-xf', '--output_file_x', help='Name of Output File (X.csv)', required=False)
+parser.add_argument('-l', '--limit', help='Number of Lines Process (if you want to restrict only for specific number of lines or hybrids in integer)', required=False)
+parser.add_argument('-r', '--rows', help='Number of Rows Ignore (Header Rows)', required=False)
+parser.add_argument('-k', '--keyword', help='Keyword after that hybrid Start', required=False)
+parser.add_argument('-c', '--columncheck', help='Number of Columns check for Keyword', required=False)
+
+args = parser.parse_args()
+def output_fdir(argument_path):
+    dir_path = os.path.abspath(argument_path)
+    if os.path.exists(dir_path):
+        dir_name = dir_path
+    else:
+        os.makedirs(dir_path)
+        dir_name = dir_path
+    return dir_name
+
+if args.input is not None:
+    Input_path = os.path.abspath(args.input)
+    if os.path.exists(Input_path):
+        Input_dir = Input_path
+        if args.output is not None:
+            Output_dir = output_fdir(args.output)
+        elif data_output_dir is not None or data_output_dir != '':
+            Output_dir = data_output_dir
+        else:
+            Output_path = os.path.join(Input_path,'../../../G2F data preprocessing/Genotype/output')
+            Output_dir = output_fdir(Output_path)
+    else:
+        print(f'The input directory {args.input} does not exists on system path. Correct the Input directory, provided directory has {Input_path} path')
+elif data_input_dir is not None or data_input_dir != '':
+    Input_dir = data_input_dir
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    elif data_output_dir is not None or data_output_dir != '':
+        Output_dir = data_output_dir
+    else:
+        Output_path = '../../../G2F data preprocessing/Genotype/output'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("../../../File Upload/Genotype"):
+    Input_dir = "../../../File Upload/Genotype"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    elif data_output_dir is not None or data_output_dir != '':
+        Output_dir = data_output_dir
+    else:
+        Output_path = '../../../G2F data preprocessing/Genotype/output'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("File Upload/Genotype"):
+    Input_dir = "File Upload/Genotype"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    elif data_output_dir is not None or data_output_dir != '':
+        Output_dir = data_output_dir
+    else:
+        Output_path = 'G2F data preprocessing/Genotype/output'
+        Output_dir = output_fdir(Output_path)
+elif os.path.exists("../File Upload/Genotype"):
+    Input_dir = "../File Upload/Genotype"
+    if args.output is not None:
+        Output_dir = output_fdir(args.output)
+    elif data_output_dir is not None or data_output_dir != '':
+        Output_dir = data_output_dir
+    else:
+        Output_path = '../G2F data preprocessing/Genotype/output'
+        Output_dir = output_fdir(Output_path)
+else:
+    print("No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+    sys.exit()
+if args.input_file_name is not None:
+    if os.path.isfile(os.path.abspath(os.path.join(Input_dir, args.input_file_name))):
+        in_file = os.path.abspath(os.path.join(Input_dir, args.input_file_name))
+    elif os.path.isfile(os.path.abspath(os.path.join(Input_dir, os.path.basename(args.input_file_name)))):
+        in_file = os.path.abspath(os.path.join(Input_dir, os.path.basename(args.input_file_name)))
+    else:
+        print(f"The Input file {args.input_file_name} is not exits in {Input_dir}")
+        sys.exit()
+elif input_file is not None or input_file != '':
+    if os.path.isfile(os.path.abspath(os.path.join(Input_dir, input_file))):
+        in_file = os.path.abspath(os.path.join(Input_dir, input_file))
+    elif os.path.isfile(os.path.abspath(os.path.join(Input_dir, os.path.basename(input_file)))):
+        in_file = os.path.abspath(os.path.join(Input_dir, os.path.basename(input_file)))
+    else:
+        print(f"The Input file {input_file} is not exits in {Input_dir}")
+        sys.exit()
+else:
+    if os.path.isfile(os.path.abspath(os.path.join(Input_dir, "Markers.txt"))):
+        in_file = os.path.abspath(os.path.join(Input_dir, "Markers.txt"))
+    else:
+        print(f"The Input file Markers.txt is not exits in {Input_dir}. No file name is provided nither in argument nor in script file, Therefore, default name is used")
+        sys.exit()
+
+if args.output_file_snp is not None:
+    snp_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(args.output_file_snp)))
+elif snp_file_name is not None or snp_file_name != '':
+    snp_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(snp_file_name)))
+else:
+    snp_file = os.path.abspath(os.path.join(Output_dir, "SNPs.csv"))
+if args.output_file_gid is not None:
+    gid_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(args.output_file_gid)))
+elif gid_file_name is not None or gid_file_name != '':
+    gid_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(gid_file_name)))
+else:
+    gid_file = os.path.abspath(os.path.join(Output_dir, "GIDs.csv"))
+if args.output_file_nan is not None:
+    freq_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(args.output_file_nan)))
+elif freq_file_name is not None or freq_file_name != '':
+    freq_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(freq_file_name)))
+else:
+    freq_file = os.path.abspath(os.path.join(Output_dir, "NaNs.freq.csv"))
+if args.output_file_per is not None:
+    precfreq_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(args.output_file_per)))
+elif precfreq_file_name is not None or precfreq_file_name != '':
+    precfreq_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(precfreq_file_name)))
+else:
+    precfreq_file = os.path.abspath(os.path.join(Output_dir, "percentage.NaNs.csv"))
+if args.output_file_x is not None:
+    x_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(args.output_file_x)))
+elif x_file_name is not None or x_file_name != '':
+    x_file = os.path.abspath(os.path.join(Output_dir, os.path.basename(x_file_name)))
+else:
+    x_file = os.path.abspath(os.path.join(Output_dir, "X.csv"))
+if args.limit is not None:
+    hybridlimit = int(args.limit)
+elif hybrid_process_limit is not None or hybrid_process_limit != '':
+    hybridlimit = int(hybrid_process_limit)
+else:
+    hybridlimit = 100000
+if args.rows is not None:
+    ignore_rowslimit = int(args.rows)
+elif ignore_no_rows is not None or ignore_no_rows != '':
+    ignore_rowslimit = int(ignore_no_rows)
+else:
+    ignore_rowslimit = 1
+if args.keyword is not None:
+    keyword_name = str(args.keyword)
+elif start_keyword_name is not None or start_keyword_name != '':
+    keyword_name = str(start_keyword_name)
+else:
+    keyword_name = "marker"
+if args.columncheck is not None:
+    no_col = int(args.columncheck)
+elif no_col_check is not None or no_col_check != '':
+    no_col = int(hybrid_process_limit)
+else:
+    no_col = 3
+
 def file_rmcheck(d_file,*args, **kwargs):
     if os.path.exists(d_file):
         try:
@@ -182,7 +347,7 @@ def writecsv(out_filename, data_list, *args, **kwargs):
 
 """ The function takes input and output file names and produce required files
 if you want to ignor more rows change ignor_rows value with desire number
-if you want to limit the markers or rows change gene_limit values if you want to use uncomment
+if you want to limit the hybrids or rows change hybrid_limit values if you want to use uncomment
 line 114 to 116. In current implementation it is not used.
 if you want to cahnge header keyword or first key word in makers column change start_keyword
 The start keyword compare using substring or partial string comparison. Thereofore it is not
@@ -191,7 +356,7 @@ If you want to search keywords more than first 4 columns then change col_check v
 incase if multiple start key words exits in search keywords columns than specify index which you
 want to consider otherwise or by default it consider last column that has keyword from search columns.
 """
-def datatransform(marker_file, out_snp, out_gids, out_freq,out_prec, out_x, gene_limit=100000, ignor_rows=1, start_keyword="marker", col_check=3,incase_multikey_no=None, *args, **kwargs):
+def datatransform(marker_file, out_snp, out_gids, out_freq,out_prec, out_x, hybrid_limit, ignor_rows, start_keyword, col_check, incase_multikey_no=None, *args, **kwargs):
     if os.path.exists(marker_file):
         #open SNPs output files using open function as append
         with open(out_snp, 'w', newline='') as snp_object:
@@ -203,6 +368,7 @@ def datatransform(marker_file, out_snp, out_gids, out_freq,out_prec, out_x, gene
                 # optimize read file by adding buffer based on system
                 with open(marker_file, 'r',buffering=io.DEFAULT_BUFFER_SIZE) as Lines:
                     # the following loop is use to negelect or pass rows or ignor rows equal to ignor_row value
+                    row_count = 0
                     for _ in range(ignor_rows):
                         next(Lines)
                     # it is use to identify header in the data using keyword
@@ -236,8 +402,8 @@ def datatransform(marker_file, out_snp, out_gids, out_freq,out_prec, out_x, gene
                         else:
                             pass
                         # use to break if want to restrict on particular column count    
-                        if row_count == gene_limit+ignor_rows+1:
-                            print(f'You reach the limit {gene_limit}. That is {gene_limit+ignor_rows+1} row in the file')
+                        if row_count == hybrid_limit+ignor_rows+1:
+                            print(f'You reach the limit {hybrid_limit}. That is {hybrid_limit+ignor_rows+1} row in the file')
                             break    
                     row_count = 0
                     # iterate over rows and perform computation on rows
@@ -262,8 +428,8 @@ def datatransform(marker_file, out_snp, out_gids, out_freq,out_prec, out_x, gene
                                 nonnan_count[col_index] = nonnan_count[col_index] + 1
                             col_index = col_index + 1
                         # use to break if want to restrict on particular column count
-                        if row_count == gene_limit+ignor_rows+1:
-                            print(f'You reach the limit {gene_limit}. That is {gene_limit+ignor_rows+1} row in the file')
+                        if row_count == hybrid_limit+ignor_rows+1:
+                            print(f'You reach the limit {hybrid_limit}. That is {hybrid_limit+ignor_rows+1} row in the file')
                             break
                     if row_count==0:
                         print(f'The keyword: {start_keyword} not found in first: {col_check} columns. Increase col_check value or change start_keyword')
@@ -352,7 +518,7 @@ if __name__ == '__main__':
         # delete files if already exits using concurrent processing method
         p.map(file_rmcheck, [snp_file, gid_file, freq_file, precfreq_file, x_file])
         p.terminate()  
-    datatransform(in_file, snp_file, gid_file, freq_file, precfreq_file, x_file)
+    datatransform(in_file, snp_file, gid_file, freq_file, precfreq_file, x_file, hybridlimit, ignore_rowslimit, keyword_name, no_col)
     # use this line only if analyze performance and comment above one
     #profile.run('print(datatransform(in_file, snp_file, gid_file, freq_file, precfreq_file, x_file)); print()')
  #   if len(sys.argv)==2 and sys.argv[1]=='--help':

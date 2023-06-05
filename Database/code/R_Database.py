@@ -372,11 +372,11 @@ for root, dirs, files in os.walk (Output_dir8):
     for file in files:
         os.remove (os.path.join (root, file))
         
-G2F_files = os.listdir (Input_dir)
+G2F_files = os.listdir(Input_dir)
 
-SC1 = os.listdir (Input_dir1)
-SC2 = os.listdir (Input_dir2)
-SC3 = os.listdir (Input_dir3)
+SC1 = os.listdir(Input_dir1)
+SC2 = os.listdir(Input_dir2)
+SC3 = os.listdir(Input_dir3)
 
 # =============================================================================
 # Rainfall
@@ -747,20 +747,29 @@ for file in files:
             RMSE_Selection = []
             CS = ["NSRDB ", "DayMet ", "NWS "]
             if CS [0] + variable in df:
-                y1 = df [CS [0] + variable]
-                MSE1 = mean_squared_error (y, y1)
-                RMSE1 = np.sqrt (MSE1)
-                RMSE_Selection.append (RMSE1)
+                try:
+                    y1 = df [CS [0] + variable]
+                    MSE1 = mean_squared_error (y, y1)
+                    RMSE1 = np.sqrt (MSE1)
+                    RMSE_Selection.append (RMSE1)
+                except:
+                    pass
             if CS [1] + variable in df:
-                y2 = df [CS [1] + variable]
-                MSE2 = mean_squared_error (y, y2)
-                RMSE2 = np.sqrt (MSE2)
-                RMSE_Selection.append (RMSE2)
+                try:
+                    y2 = df [CS [1] + variable]
+                    MSE2 = mean_squared_error (y, y2)
+                    RMSE2 = np.sqrt (MSE2)
+                    RMSE_Selection.append (RMSE2)
+                except:
+                    pass
             if CS [2] + variable in df:
-                y3 = df [CS [2] + variable]
-                MSE3 = mean_squared_error (y, y3)
-                RMSE3 = np.sqrt (MSE3)
-                RMSE_Selection.append (RMSE3)
+                try:
+                    y3 = df [CS [2] + variable]
+                    MSE3 = mean_squared_error (y, y3)
+                    RMSE3 = np.sqrt (MSE3)
+                    RMSE_Selection.append (RMSE3)
+                except:
+                    pass
             if len (RMSE_Selection) > 0:
                 Min_RMSE = min (RMSE_Selection)
                 if Min_RMSE == RMSE1:
