@@ -26,7 +26,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='Path of Input Directory from Current Path', required=False)
 parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path', required=False)
 parser.add_argument('-m', '--metafile', help='Path of Lat Lon text file from Current Path', required=False)
-parser.add_argument('-sy', '--startyear', help='Start Year e.g 1980', required=False)
+parser.add_argument('-sy', '--startyear', help='Start Year e.g 2014', required=False)
+parser.add_argument('-ey', '--endyear', help='End Year e.g 2014', required=False)
 args = parser.parse_args()
 def output_fdir(argument_path):
     dir_path = os.path.abspath(argument_path)
@@ -146,9 +147,17 @@ def get_stations_from_networks():
 
 def main():
     """Our main method"""
+    if args.startyear is None:
+        year = 2014
+    else:
+        year = args.startyear
+    if args.endyear is None:
+        eyear = datetime.datetime.now().year
+    else:
+        eyear = 2021
     # timestamps in UTC to request data for
-    startts = datetime.datetime(2014, 1, 1)
-    endts = datetime.datetime(2017, 12, 1)
+    startts = datetime.datetime(year, 1, 1)
+    endts = datetime.datetime(eyear, 12, 1)
 
     service = SERVICE + "data=all&tz=Etc/UTC&format=comma&latlon=yes&"
 

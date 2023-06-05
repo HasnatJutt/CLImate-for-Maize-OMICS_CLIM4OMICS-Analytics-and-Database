@@ -512,7 +512,7 @@ plt.xlabel ("Corr-SR")
 plt.ylabel ("Density")
 plt.legend () 
 # plt.title ("Correlation")
-plt.savefig (os.path.joinfig (Output_dir2 , "0PDF " + "Correlation" + ".png"), dpi = 400) 
+plt.savefig (os.path.join(Output_dir2 , "0PDF " + "Correlation" + ".png"), dpi = 400)
 plt.close ()
   
 # MAE
@@ -523,7 +523,7 @@ plt.xlabel ("MAE-SR")
 plt.ylabel ("Density")
 plt.legend () 
 # plt.title ("MAE")
-plt.savefig (os.path.joinfig (Output_dir2 , "0PDF " + "Mean Absolute Error" + ".png"), dpi = 400) 
+plt.savefig (os.path.join(Output_dir2 , "0PDF " + "Mean Absolute Error" + ".png"), dpi = 400)
 plt.close ()
 
 # MSE
@@ -536,7 +536,7 @@ plt.xlabel ("MSE-SR")
 plt.ylabel ("Density")
 # plt.legend () 
 plt.title ("MSE")
-plt.savefig (os.path.joinfig (Output_dir2 , "0PDF " + "Mean Squared Error" + ".png"), dpi = 400) 
+plt.savefig (os.path.join(Output_dir2 , "0PDF " + "Mean Squared Error" + ".png"), dpi = 400)
 plt.close ()
 
 # RMSE
@@ -548,7 +548,7 @@ plt.xlabel ("RMSE-SR")
 plt.ylabel ("Density")
 plt.legend () 
 #plt.title ("RMSE")
-plt.savefig (os.path.joinfig (Output_dir2 , "0PDF " + "Root Mean Squared Error" + ".png"), dpi = 400) 
+plt.savefig (os.path.join(Output_dir2 , "0PDF " + "Root Mean Squared Error" + ".png"), dpi = 400)
 plt.close () 
 
 # =============================================================================
@@ -574,7 +574,7 @@ for filename in Files:
     ax.set_xlabel ("Day of Year")
     ax.set_ylabel (variable)
     ax.set_title (filename [1:-4])
-    plt.savefig (os.path.joinfig (Output_dir2 , filename [:-4] + ".jpg"), bbox_inches = "tight", dpi = 600)
+    plt.savefig (os.path.join(Output_dir2 , filename [:-4] + ".jpg"), bbox_inches = "tight", dpi = 600)
     plt.close () 
 
 # =============================================================================
