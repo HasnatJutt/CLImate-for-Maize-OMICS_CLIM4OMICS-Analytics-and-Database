@@ -629,7 +629,8 @@ for file in files:
                     
         else:
             No_lat_lon.append (file)
-            df.to_csv(os.path.join (Output_dir9, file), index = None)
+            if len(df.index) > 1:
+                df.to_csv(os.path.join(Output_dir9, file), index=None)
 
 # =============================================================================
 # Missing     
@@ -693,7 +694,8 @@ for file in files:
   
                 else:
                    No_lat_lon.append (file)
-                   df.to_csv(os.path.join (Output_dir9, file), index = None)
+                   if len(df.index) > 1:
+                       df.to_csv(os.path.join(Output_dir9, file), index=None)
               
             else:
                 'Missing_Enough_ANN'
@@ -735,7 +737,8 @@ for file in files:
    
                 else:
                    No_lat_lon.append (file)
-                   df.to_csv(os.path.join (Output_dir9, file), index = None)
+                   if len(df.index) > 1:
+                       df.to_csv(os.path.join(Output_dir9, file), index=None)
                      
             
         else:
@@ -799,7 +802,8 @@ for file in files:
                         
             else:                    
                 No_lat_lon.append (file)
-                df.to_csv(os.path.join (Output_dir9, file), index = None)
+                if len(df.index) > 1:
+                    df.to_csv(os.path.join (Output_dir9, file), index = None)
                     
                             
 #print ("Complete =", len(Complete),
