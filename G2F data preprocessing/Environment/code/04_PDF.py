@@ -132,7 +132,10 @@ var = ["Temperature [C]", "Dew Point [C]", "Relative Humidity [%]", "Solar Radia
 for i in var:
     data[i]=pd.to_numeric(data[i], errors='coerce')
     sns.set (style = "darkgrid")
-    pdf = sns.histplot(data[i], kde=True, stat="density")
+    if i=="Rainfall [mm]":
+        pdf = sns.histplot(data[i], kde=True, stat="density", binwidth=5)
+    else:
+        pdf = sns.histplot(data[i], kde=True, stat="density")
     plt.title ("PDF")
     plt.savefig (os.path.abspath(os.path.join(Output_dir ,"PDF " +  i [:9] + ".png")), dpi = 400)
     plt.close () 
