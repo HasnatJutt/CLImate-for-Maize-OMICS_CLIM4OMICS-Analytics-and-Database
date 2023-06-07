@@ -42,12 +42,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='Path of Input Directory from Current Path', required=False)
 parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path', required=False)
 parser.add_argument('-m', '--meta', help='Path of Meta Files Input Directory1 from Current Path', required=False)
-parser.add_argument('-o1', '--output', help='Path of Output Directory (Predication) from Current Path', required=False)
-parser.add_argument('-o2', '--output', help='Path of Output Directory (Y_Predication) from Current Path', required=False)
-parser.add_argument('-o3', '--output', help='Path of Output Directory (Loss) from Current Path', required=False)
-parser.add_argument('-o4', '--output', help='Path of Output Directory from Current Path', required=False)
-parser.add_argument('-o5', '--output', help='Path of Output Directory (Performance) from Current Path', required=False)
-parser.add_argument('-o10', '--output', help='Path of Output Directory All files (Database/All Files) from Current Path', required=False)
+parser.add_argument('-o1', '--output1', help='Path of Output Directory (Predication) from Current Path', required=False)
+parser.add_argument('-o2', '--output2', help='Path of Output Directory (Y_Predication) from Current Path', required=False)
+parser.add_argument('-o3', '--output3', help='Path of Output Directory (Loss) from Current Path', required=False)
+parser.add_argument('-o4', '--output4', help='Path of Output Directory from Current Path', required=False)
+parser.add_argument('-o5', '--output5', help='Path of Output Directory (Performance) from Current Path', required=False)
+parser.add_argument('-o10', '--output10', help='Path of Output Directory All files (Database/All Files) from Current Path', required=False)
 args = parser.parse_args()
 
 
@@ -221,7 +221,7 @@ for filename in files:
 # Pairplot
     plt.style.use ("seaborn")
     pairplot = sns.pairplot (df)
-    pairplot.savefig (Output_dir + file [:-4] + ".png", dpi = 400)
+    pairplot.savefig(os.path.join (Output_dir , file [:-4] + ".png"), dpi = 400)
     plt.close ()
    
 # Mean ########################################################################
@@ -283,7 +283,7 @@ for filename in files:
         loss.plot ()
         plt.xlabel ("Epoch")
         plt.ylabel ("Loss")
-        plt.savefig (Output_dir4 + "Mean" + file [:-4] + ".png", dpi = 400)
+        plt.savefig(os.path.join (Output_dir4 , "Mean" + file [:-4] + ".png"), dpi = 400)
         plt.close ()
 
 # Predict for Test Data    
@@ -292,10 +292,10 @@ for filename in files:
         plt.xlabel ("Observed")
         plt.ylabel ("Predicted")
         plt.legend ()
-        plt.savefig (Output_dir1 + "Mean" + file [:-4] + ".png", dpi = 400)
+        plt.savefig(os.path.join (Output_dir1 , "Mean" + file [:-4] + ".png"), dpi = 400)
         RMSE = np.sqrt (metrics.mean_squared_error (y_test, predictions))
         RMSE_list.append (RMSE)
-        # plt.savefig (Output_dir1 + file [:-4] + ".png", dpi = 400)
+        # plt.savefig(os.path.join (Output_dir1 + file [:-4] + ".png"), dpi = 400)
 
 # Predict New Data    
     X_new = df_new [selected_feature].values
@@ -364,7 +364,7 @@ for filename in files:
 #         loss.plot ()
 #         plt.xlabel ("Epoch")
 #         plt.ylabel ("Loss")
-#         plt.savefig (Output_dir4 + "Min" + file [:-4] + ".png", dpi = 400)
+#         plt.savefig(os.path.join (Output_dir4 + "Min" + file [:-4] + ".png"), dpi = 400)
 #         plt.close ()
         
 # # Predict for Test Data    
@@ -373,10 +373,10 @@ for filename in files:
 #         plt.xlabel ("Observed")
 #         plt.ylabel ("Predicted")
 #         plt.legend ()
-#         plt.savefig (Output_dir1 + "Min" + file [:-4] + ".png", dpi = 400)
+#         plt.savefig(os.path.join (Output_dir1 + "Min" + file [:-4] + ".png"), dpi = 400)
 #         RMSE = np.sqrt (metrics.mean_squared_error (y_test, predictions))
 #         RMSE_list_Min.append (RMSE)
-#         # plt.savefig (Output_dir1 + file [:-4] + ".png", dpi = 400)
+#         # plt.savefig(os.path.join (Output_dir1 + file [:-4] + ".png"), dpi = 400)
 
 # # Predict New Data    
 #     X_new_min = df_new [selected_feature].values
@@ -447,7 +447,7 @@ for filename in files:
         loss.plot ()
         plt.xlabel ("Epoch")
         plt.ylabel ("Loss")
-        plt.savefig (Output_dir4 + "Max" + file [:-4] + ".png", dpi = 400)
+        plt.savefig(os.path.join (Output_dir4 , "Max" + file [:-4] + ".png"), dpi = 400)
         plt.close ()
         
 # Predict for Test Data    
@@ -456,10 +456,10 @@ for filename in files:
         plt.xlabel ("Observed")
         plt.ylabel ("Predicted")
         plt.legend ()
-        plt.savefig (Output_dir1 + "Max" + file [:-4] + ".png", dpi = 400)
+        plt.savefig(os.path.join (Output_dir1 , "Max" + file [:-4] + ".png"), dpi = 400)
         RMSE = np.sqrt (metrics.mean_squared_error (y_test, predictions))
         RMSE_list_Max.append (RMSE)
-        # plt.savefig (Output_dir1 + file [:-4] + ".png", dpi = 400)
+        # plt.savefig(os.path.join (Output_dir1 + file [:-4] + ".png"), dpi = 400)
 
 # Predict New Data    
     X_new_max = df_new [selected_feature].values
@@ -467,13 +467,13 @@ for filename in files:
     y_new_max = ANN.predict (X_new_max)
     y_new_max = pd.DataFrame (y_new_max, columns = ["Max " + variable])
     y_new_max = pd.concat ([y_new_min, y_new_max], axis = 1)
-    y_new_max.to_csv (Output_dir2 + file [:-4] + ".csv", index = None)
+    y_new_max.to_csv(os.path.join (Output_dir2 , file [:-4] + ".csv"), index = None)
     plt.close ()
         
 #     # plt.xlabel ("Observed")
 #     # plt.ylabel ("Predicted")
 #     # # plt.legend ()
-#     # plt.savefig (Output_dir1 + file [:-4] + ".png", dpi = 400)
+#     # plt.savefig(os.path.join (Output_dir1 + file [:-4] + ".png"), dpi = 400)
 #     # plt.close ()
 
 # =============================================================================
@@ -482,38 +482,38 @@ for filename in files:
 df = pd.DataFrame (list(zip(Experiments_list, RMSE_list, RMSE_list_Max)), columns = ["Experiment_ID", "RMSE", "RMSE_Max"])  
 df.plot.density ()
 plt.title ("RMSE")
-plt.savefig (Output_dir3 + "RMSE_Density.png", dpi = 400)
+plt.savefig(os.path.join (Output_dir3 , "RMSE_Density.png"), dpi = 400)
 plt.close ()
 
 df ["RMSE"].plot.hist (color = "black")
 plt.title ("RMSE")
-plt.savefig (Output_dir3 + "RMSE_Histogram.png", dpi = 400)
+plt.savefig(os.path.join (Output_dir3 , "RMSE_Histogram.png"), dpi = 400)
 plt.close ()
 
 # df ["RMSE_Min"].plot.hist (color = "red")
 # plt.title ("RMSE_Min")
-# plt.savefig (Output_dir3 + "RMSE_Min_Histogram.png", dpi = 400)
+# plt.savefig(os.path.join (Output_dir3 + "RMSE_Min_Histogram.png"), dpi = 400)
 # plt.close ()
 
 df ["RMSE_Max"].plot.hist (color = "blue")
 plt.title ("RMSE_Max")
-plt.savefig (Output_dir3 + "RMSE_Max_Histogram.png", dpi = 400)
+plt.savefig(os.path.join (Output_dir3 , "RMSE_Max_Histogram.png"), dpi = 400)
 plt.close ()
 
 df.plot.box ()
 plt.title ("RMSE")
-plt.savefig (Output_dir3 + "RMSE_Box.png", dpi = 400)
+plt.savefig(os.path.join (Output_dir3 , "RMSE_Box.png"), dpi = 400)
 plt.close ()
 
 print ("RMSE_ave =", mean (RMSE_list))
 # print ("RMSE_ave_Min =", mean (RMSE_list_Min))
 print ("RMSE_ave_Max =", mean (RMSE_list_Max))
 
-lat_lon = pd.read_csv (Input_dir1 + "lat_lon.csv")
+lat_lon = pd.read_csv(os.path.join (Input_dir1 , "lat_lon.csv"))
 df ["Experiment_ID"] = df ["Experiment_ID"].str [1:]
 Merge = pd.merge (df, lat_lon, on = "Experiment_ID")
 
-Merge.to_csv (Output_dir5 + Abb + "_Performance" + ".csv", index = None)
+Merge.to_csv(os.path.join (Output_dir5 , Abb + "_Performance.csv"), index = None)
     
 # =============================================================================
 # Complete Database
@@ -536,4 +536,4 @@ for filename in files:
             complete [Abb + "I_Day"] = Abb + "I" + complete ["Day"].astype (str)
             complete [Abb + "A_Day"] = Abb + "A" + complete ["Day"].astype (str)
             complete = complete [["Day", Abb + "I", Abb + "I_Day", Abb + "M", Abb + "M_Day", Abb + "A", Abb + "A_Day"]]
-            complete.to_csv (Output_dir10 + file, index = None)
+            complete.to_csv(os.path.join (Output_dir10 , file), index = None)

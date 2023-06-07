@@ -1,6 +1,6 @@
 Goal: Checking the primary and secondary columns' names in G2F environmental (weather) files and also controling and removing the values out of range for each variable (False values).
 URL = https://www.genomes2fields.org/
-Models: (1) 01_Weather_Files_Primary_Columns, (2) 02_Weather_Files_Secondary_Columns, (3) 03_Control
+Models: (1) Weather_Primary_Secondary_Control
 Input: G2F_Weather_Data raw files
 Output: G2F_weather_Data_Controlled files
 The Primary Columns are the columns that must be available in the weather data raw files and the columns names should be like below:
