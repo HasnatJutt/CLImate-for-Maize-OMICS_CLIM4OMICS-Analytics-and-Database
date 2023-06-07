@@ -216,7 +216,7 @@ print(Shared)
 # Wall = Wall [Wall ["Experiment"].isin (Shared)]
 # YP1P2 = YP1P2_2 [YP1P2_2 ["Env.x"].isin (Shared)]
 
-Wall.to_csv (Output_dir + "Wall.csv", index = None)  
+Wall.to_csv (os.path.join(Output_dir, "Wall.csv"), index = None)
 
 # =============================================================================    
 # Adding UID and EID columns to the updated Phenitype file (YP1P2.csv)
@@ -230,7 +230,7 @@ YP1P2 ["EID"] = YP1P2 ["EID"] + 1
 YP1P2 ["CV0"] = YP1P2 ["EID"]
 YP1P2 ["CV00"] = YP1P2 ["UID"]
 
-YP1P2.to_csv (Output_dir + "YP1P2.csv", index = None)
+YP1P2.to_csv(os.path.join(Output_dir, "YP1P2.csv"), index = None)
 
 # =============================================================================    
 # Printing some informations about the selected experiments
