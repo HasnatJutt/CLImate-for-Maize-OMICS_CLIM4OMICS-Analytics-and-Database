@@ -9,11 +9,14 @@ Created on Wed Aug  5 12:43:29 2020
 # =============================================================================
 # Import necessary libraries
 # =============================================================================
-import os, re, os.path
+import os
+import sys
+import glob
+import os.path
+import argparse
 import pandas as pd
 import numpy as np
 from functools import reduce
-import glob
 from sklearn import preprocessing
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -27,8 +30,7 @@ parser.add_argument('-i', '--input', help='Path of Input Directory from Current 
 parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path', required=False)
 parser.add_argument('-p', '--pheno', help='Path of Phenotype Files Input Directory (G2F/Phenotype) from Current Path', required=False)
 parser.add_argument('-g', '--geno', help='Path of Phenotype Files Input Directory (G2F/Genotype) from Current Path', required=False)
-parargs = parser.parse_args()
-
+args = parser.parse_args()
 
 def output_fdir(argument_path):
     dir_path = os.path.abspath(argument_path)

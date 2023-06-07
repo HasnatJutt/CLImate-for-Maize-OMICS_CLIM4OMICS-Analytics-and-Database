@@ -117,7 +117,7 @@ files = glob.glob(os.path.abspath(os.path.join(Output_dir, '*.csv')))
 for file in files:
     os.remove(file)
         
-files = glob.glob(os.path.abspath(os.path.join(Output_dir, '*.csv')))
+files = glob.glob(os.path.abspath(os.path.join(Input_dir, '*.csv')))
 all_files = []
 for filename in files:
     file = os.path.basename(filename)
@@ -242,7 +242,7 @@ for file in selection_S:
 Selected_files = selection_E           
 length = []
 for file in selection_E:
-    df = pd.read_csv (Input_dir + file)
+    df = pd.read_csv (os.path.join(Input_dir, file))
     days = len (df ["Day"].tolist ())
     length.append (days)
 
@@ -314,7 +314,7 @@ for exp in Experiments:
     Matrix7 = Matrix6.reshape (1, -1)
     # Concatenate the matrix5 and matrix7 
     Matrix_Final = np.concatenate ((Matrix7, Matrix5), axis = 0)
-    data = pd.DataFrame(Matrix_Final, index = ["Day", str(exp) [:-4]])
+    data = pd.DataFrame(Matrix_Final, index = ["Day", str(os.path.basename(exp))[:-4]])
     data.to_csv(exp)
 
 all_filenames = glob.glob(os.path.abspath(os.path.join(Output_dir, '*.csv')))

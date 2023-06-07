@@ -220,7 +220,7 @@ for filename in files:
 # Pairplot
     plt.style.use ("seaborn")
     pairplot = sns.pairplot (df)
-    pairplot.savefig (Output_dir + file [:-4] + ".png", dpi = 400)
+    pairplot.savefig(os.path.join (Output_dir , file [:-4] + ".png"), dpi = 400)
     plt.close ()
    
 # Mean ########################################################################  
@@ -282,7 +282,7 @@ for filename in files:
         loss.plot ()
         plt.xlabel ("Epoch")
         plt.ylabel ("Loss")
-        plt.savefig (Output_dir4 + "Mean" + file [:-4] + ".png", dpi = 400)
+        plt.savefig(os.path.join (Output_dir4 , "Mean" + file [:-4] + ".png"), dpi = 400)
         plt.close ()
 
 # Predict for Test Data    
@@ -291,10 +291,10 @@ for filename in files:
         plt.xlabel ("Observed")
         plt.ylabel ("Predicted")
         plt.legend ()
-        plt.savefig (Output_dir1 + "Mean" + file [:-4] + ".png", dpi = 400)
+        plt.savefig(os.path.join (Output_dir1 , "Mean" + file [:-4] + ".png"), dpi = 400)
         RMSE = np.sqrt (metrics.mean_squared_error (y_test, predictions))
         RMSE_list.append (RMSE)
-        # plt.savefig (Output_dir1 + file [:-4] + ".png", dpi = 400)
+        # plt.savefig(os.path.join (Output_dir1 + file [:-4] + ".png"), dpi = 400)
 
 # Predict New Data    
     X_new = df_new [selected_feature].values
@@ -302,7 +302,7 @@ for filename in files:
     y_new = ANN.predict (X_new)
     y_new = pd.DataFrame (y_new, columns = [variable])
     y_new = pd.concat ([df_index, y_new], axis = 1)
-    y_new.to_csv (Output_dir2 + file [:-4] + ".csv", index = None)
+    y_new.to_csv(os.path.join (Output_dir2 , file [:-4] + ".csv"), index = None)
     
     plt.close ()
     
@@ -365,7 +365,7 @@ for filename in files:
 #         loss.plot ()
 #         plt.xlabel ("Epoch")
 #         plt.ylabel ("Loss")
-#         plt.savefig (Output_dir4 + "Mean" + file [:-4] + ".png", dpi = 400)
+#         plt.savefig(os.path.join (Output_dir4 + "Mean" + file [:-4] + ".png"), dpi = 400)
 #         plt.close ()
 
 # # Predict for Test Data    
@@ -374,10 +374,10 @@ for filename in files:
 #         plt.xlabel ("Observed")
 #         plt.ylabel ("Predicted")
 #         plt.legend ()
-#         plt.savefig (Output_dir1 + "Mean" + file [:-4] + ".png", dpi = 400)
+#         plt.savefig(os.path.join (Output_dir1 + "Mean" + file [:-4] + ".png"), dpi = 400)
 #         RMSE = np.sqrt (metrics.mean_squared_error (y_test, predictions))
 #         RMSE_list.append (RMSE)
-#         # plt.savefig (Output_dir1 + file [:-4] + ".png", dpi = 400)
+#         # plt.savefig(os.path.join (Output_dir1 + file [:-4] + ".png"), dpi = 400)
 
 # # Predict New Data    
 #     X_new = df_new [selected_feature].values
@@ -448,7 +448,7 @@ for filename in files:
 #         loss.plot ()
 #         plt.xlabel ("Epoch")
 #         plt.ylabel ("Loss")
-#         plt.savefig (Output_dir4 + "Mean" + file [:-4] + ".png", dpi = 400)
+#         plt.savefig(os.path.join (Output_dir4 + "Mean" + file [:-4] + ".png"), dpi = 400)
 #         plt.close ()
 
 # # Predict for Test Data    
@@ -457,10 +457,10 @@ for filename in files:
 #         plt.xlabel ("Observed")
 #         plt.ylabel ("Predicted")
 #         plt.legend ()
-#         plt.savefig (Output_dir1 + "Mean" + file [:-4] + ".png", dpi = 400)
+#         plt.savefig(os.path.join (Output_dir1 + "Mean" + file [:-4] + ".png"), dpi = 400)
 #         RMSE = np.sqrt (metrics.mean_squared_error (y_test, predictions))
 #         RMSE_list.append (RMSE)
-#         # plt.savefig (Output_dir1 + file [:-4] + ".png", dpi = 400)
+#         # plt.savefig(os.path.join (Output_dir1 + file [:-4] + ".png"), dpi = 400)
 
 # # Predict New Data    
 #     X_new = df_new [selected_feature].values
@@ -478,38 +478,38 @@ for filename in files:
 df = pd.DataFrame (list(zip(Experiments_list, RMSE_list)), columns = ["Experiment_ID", "RMSE"])  
 df.plot.density ()
 plt.title ("RMSE")
-plt.savefig (Output_dir3 + "RMSE_Density.png", dpi = 400)
+plt.savefig(os.path.join (Output_dir3 , "RMSE_Density.png"), dpi = 400)
 plt.close ()
 
 df ["RMSE"].plot.hist (color = "blue")
 plt.title ("RMSE")
-plt.savefig (Output_dir3 + "RMSE_Histogram.png", dpi = 400)
+plt.savefig(os.path.join (Output_dir3 , "RMSE_Histogram.png"), dpi = 400)
 plt.close ()
 
 #df ["RMSE_Min"].plot.hist (color = "green")
 #plt.title ("RMSE_Min")
-#plt.savefig (Output_dir3 + "RMSE_Min_Histogram.png", dpi = 400)
+#plt.savefig(os.path.join (Output_dir3 + "RMSE_Min_Histogram.png"), dpi = 400)
 #plt.close ()
 
 #df ["RMSE_Max"].plot.hist (color = "red")
 #plt.title ("RMSE_Max")
-#plt.savefig (Output_dir3 + "RMSE_Max_Histogram.png", dpi = 400)
+#plt.savefig(os.path.join (Output_dir3 + "RMSE_Max_Histogram.png"), dpi = 400)
 #plt.close ()
 
 df.plot.box ()
 plt.title ("RMSE")
-plt.savefig (Output_dir3 + "RMSE_Box.png", dpi = 400)
+plt.savefig(os.path.join (Output_dir3 , "RMSE_Box.png"), dpi = 400)
 plt.close ()
 
 print ("RMSE_ave =", mean (RMSE_list))
 #print ("RMSE_ave_Min =", mean (RMSE_list_Min))
 #print ("RMSE_ave_Max =", mean (RMSE_list_Max))
 
-lat_lon = pd.read_csv (Input_dir1 + "lat_lon.csv")
+lat_lon = pd.read_csv(os.path.join (Input_dir1 , "lat_lon.csv"))
 df ["Experiment_ID"] = df ["Experiment_ID"].str [1:]
 Merge = pd.merge (df, lat_lon, on = "Experiment_ID")
 
-Merge.to_csv (Output_dir5 + Abb + "_Performance" + ".csv", index = None)
+Merge.to_csv(os.path.join (Output_dir5 , Abb + "_Performance.csv"), index = None)
 
 # =============================================================================
 # Complete Database
@@ -530,4 +530,4 @@ for filename in files:
             complete.columns = ["Day", Abb + "M"]
             complete [Abb + "M_Day"] = Abb + "M" + complete ["Day"].astype (str)
             complete = complete [["Day", Abb + "M", Abb + "M_Day"]]
-            complete.to_csv (Output_dir10 + file, index = None)
+            complete.to_csv(os.path.join (Output_dir10 , file), index = None)
