@@ -2,9 +2,7 @@
 """
 Created on Thu Jan 30 16:58:43 2020
 
-@author: psarzaeim2, Hasnat
-
-Updated on May 2023 
+@author: psarzaeim2
 """
 
 ## Ploting the Piecharts to Show the Portions of "Complete", "Empty", and "Incomplete" Datasets for each Variable   
@@ -12,9 +10,6 @@ Updated on May 2023
 # Import necessary libraries
 # =============================================================================
 import os
-import glob
-import pathlib
-import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -22,72 +17,28 @@ import seaborn as sns
 # =============================================================================
 # Input and Output directories
 # =============================================================================
-parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--input', help='Path of Input Directory from Current Path', required=False)
-parser.add_argument('-o', '--output', help='Path of Output Directory from Current Path', required=False)
-args = parser.parse_args()
-def output_fdir(argument_path):
-    dir_path = os.path.abspath(argument_path)
-    if os.path.exists(dir_path):
-        dir_name = dir_path
-    else:
-        os.makedirs(dir_path)
-        dir_name = dir_path
-    return dir_name
-
-if args.input is not None:
-    Input_path = os.path.abspath(args.input)
-    if os.path.exists(Input_path):
-        Input_dir = Input_path
-        if args.output is not None:
-            Output_dir = output_fdir(args.output)
-        else:
-            Output_path = os.path.join(Input_path,'../../../G2F data preprocessing/Environment/output/Timeseries Analysis')
-            Output_dir = output_fdir(Output_path)
-    else:
-        print(f'The input directory {args.input} does not exists on system path. Correct the Input directory, provided directory has {Input_path} path')
-
-elif os.path.exists("../../../G2F data preprocessing/Environment/output/G2F Separating"):
-    Input_dir = "../../../G2F data preprocessing/Environment/output/G2F Separating"
-    if args.output is not None:
-        Output_dir = output_fdir(args.output)
-    else:
-        Output_path = '../../../G2F data preprocessing/Environment/output/Timeseries Analysis'
-        Output_dir = output_fdir(Output_path)  
-elif os.path.exists("G2F data preprocessing/Environment/output/G2F Separating"):
-    Input_dir = "G2F data preprocessing/Environment/output/G2F Separating"     
-    if args.output is not None:
-        Output_dir = output_fdir(args.output)
-    else:
-        Output_path = 'G2F data preprocessing/Environment/output/Timeseries Analysis'
-        Output_dir = output_fdir(Output_path)  
-elif os.path.exists("../G2F data preprocessing/Environment/output/G2F Separating"):
-    Input_dir = "../G2F data preprocessing/Environment/output/G2F Separating"     
-    if args.output is not None:
-        Output_dir = output_fdir(args.output)
-    else:
-        Output_path = '../G2F data preprocessing/Environment/output/Timeseries Analysis'
-        Output_dir = output_fdir(Output_path)
-else:
-    print("No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
-
-print ("Input directory = ", Input_dir)
+path = os.chdir ("../output/G2F Separating")
+Input_dir = os.getcwd ().replace ("\\", "/")
+Input_dir = Input_dir + "/"
+Output_dir = os.chdir ("../Timeseries Analysis")
+Output_dir = os.getcwd ().replace ("\\", "/")
+Output_dir = Output_dir + "/"
+print("Input directory = ", Input_dir)
 print ("Output directory ", Output_dir)
-
     
 # =============================================================================
 # Creating dataframes
 # =============================================================================
 # Temperature
-files = glob.glob(os.path.abspath(os.path.join(Input_dir,'*.csv')))
+files = os.listdir (Input_dir)
 
 Complete_T = []
 Missing_T = []
 Empty_T = []
 
 for file in files:
-    if os.path.basename(file)[0] == "T":
-            df = pd.read_csv (file, index_col = "Day of Year [Local]")
+    if file [0] == "T":
+            df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
             
             No_of_Days = df.shape [0]
             No_of_Days_with_empty_data = df.iloc [:,1].isnull().sum()
@@ -116,19 +67,20 @@ sizes = [Complete_T, Missing_T, Empty_T]
 plt.pie (sizes, labels = labels, startangle = 90, autopct = "%1.1f%%")
 plt.get_cmap ("copper")
 plt.title ("Temperature")
-plt.savefig (os.path.abspath(os.path.join(Output_dir ,"Temperature.jpg")), bbox_inches = "tight", dpi = 400)
+plt.savefig ("Temperature.jpg", bbox_inches = "tight", dpi = 400)
 plt.close ()
 
 # =============================================================================
 # Dew Point
+files = os.listdir (Input_dir)
 
 Complete_D = []
 Missing_D = []
 Empty_D = []
 
 for file in files:
-    if os.path.basename(file)[0] == "D":
-            df = pd.read_csv (file, index_col = "Day of Year [Local]")
+    if file [0] == "D":
+            df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
             
             No_of_Days = df.shape [0]
             No_of_Days_with_empty_data = df.iloc [:,1].isnull().sum()
@@ -153,19 +105,20 @@ labels = "Complete", "Missing", "Empty"
 sizes = [Complete_D, Missing_D, Empty_D]
 plt.pie (sizes, labels = labels, startangle = 90, autopct = "%1.1f%%")
 plt.title ("Dew Point")
-plt.savefig (os.path.abspath(os.path.join(Output_dir ,"Dew Point.jpg")), bbox_inches = "tight", dpi = 400)
+plt.savefig ("Dew Point.jpg", bbox_inches = "tight", dpi = 400)
 plt.close ()
 
 # =============================================================================
 # Relative Humidity
+files = os.listdir (Input_dir)
 
 Complete_H = []
 Missing_H = []
 Empty_H = []
 
 for file in files:
-    if os.path.basename(file)[0] == "H":
-            df = pd.read_csv (file, index_col = "Day of Year [Local]")
+    if file [0] == "H":
+            df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
             
             No_of_Days = df.shape [0]
             No_of_Days_with_empty_data = df.iloc [:,1].isnull().sum()
@@ -190,19 +143,20 @@ labels = "Complete", "Missing", "Empty"
 sizes = [Complete_H, Missing_H, Empty_H]
 plt.pie (sizes, labels = labels, startangle = 90, autopct = "%1.1f%%")
 plt.title ("Relative Humidity")
-plt.savefig (os.path.abspath(os.path.join(Output_dir ,"Relative Humidity.jpg")), bbox_inches = "tight", dpi = 400)
+plt.savefig ("Relative Humidity.jpg", bbox_inches = "tight", dpi = 400)
 plt.close ()
 
 # =============================================================================    
 # Solar Radiation
+files = os.listdir (Input_dir)
 
 Complete_S = []
 Missing_S = []
 Empty_S = []
 
 for file in files:
-    if os.path.basename(file)[0] == "S":
-            df = pd.read_csv (file, index_col = "Day of Year [Local]")
+    if file [0] == "S":
+            df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
             
             No_of_Days = df.shape [0]
             No_of_Days_with_empty_data = df.iloc [:,1].isnull().sum()
@@ -227,19 +181,20 @@ labels = "Complete", "Missing", "Empty"
 sizes = [Complete_S, Missing_S, Empty_S]
 plt.pie (sizes, labels = labels, startangle = 90, autopct = "%1.1f%%")
 plt.title ("Solar Radiation")
-plt.savefig (os.path.abspath(os.path.join(Output_dir ,"Solar Radiation.jpg")), bbox_inches = "tight", dpi = 400)
+plt.savefig ("Solar Radiation.jpg", bbox_inches = "tight", dpi = 400)
 plt.close ()
 
 # =============================================================================    
 # Rainfall
+files = os.listdir (Input_dir)
 
 Complete_R = []
 Missing_R = []
 Empty_R = []
 
 for file in files:
-    if os.path.basename(file)[0] == "R":
-            df = pd.read_csv (file, index_col = "Day of Year [Local]")
+    if file [0] == "R":
+            df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
             
             No_of_Days = df.shape [0]
             No_of_Days_with_empty_data = df.iloc [:,1].isnull().sum()
@@ -264,19 +219,20 @@ labels = "Complete", "Missing", "Empty"
 sizes = [Complete_R, Missing_R, Empty_R]
 plt.pie (sizes, labels = labels, startangle = 90, autopct = "%1.1f%%")
 plt.title ("Rainfall")
-plt.savefig (os.path.abspath(os.path.join(Output_dir ,"Rainfall.jpg")), bbox_inches = "tight", dpi = 400)
+plt.savefig ("Rainfall.jpg", bbox_inches = "tight", dpi = 400)
 plt.close ()
 
 # =============================================================================    
 # Wind Speed
+files = os.listdir (Input_dir)
 
 Complete_W = []
 Missing_W = []
 Empty_W = []
 
 for file in files:
-    if os.path.basename(file)[0] == "W":
-            df = pd.read_csv ( file, index_col = "Day of Year [Local]")
+    if file [0] == "W":
+            df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
             
             No_of_Days = df.shape [0]
             No_of_Days_with_empty_data = df.iloc [:,1].isnull().sum()
@@ -301,23 +257,24 @@ labels = "Complete", "Missing", "Empty"
 sizes = [Complete_W, Missing_W, Empty_W]
 plt.pie (sizes, labels = labels, startangle = 90, autopct = "%1.1f%%")
 plt.title ("Wind Speed")
-plt.savefig (os.path.abspath(os.path.join(Output_dir ,"Wind Speed.jpg")), bbox_inches = "tight", dpi = 400)
+plt.savefig ("Wind Speed.jpg", bbox_inches = "tight", dpi = 400)
 plt.close ()
 
 # =============================================================================    
 # Wind Direction
+files = os.listdir (Input_dir)
 
 Complete_I = []
 Missing_I = []
 Empty_I = []
 
 for file in files:
-    if os.path.basename(file)[0] == "I":
-            df = pd.read_csv (file, index_col = "Day of Year [Local]")
+    if file [0] == "I":
+            df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
             for file1 in files:
-                if os.path.basename(file1)[0] == "W":
-                    df1 = pd.read_csv (file1, index_col = "Day of Year [Local]")
-                    if os.path.basename(file)[1:] == os.path.basename(file1)[1:]:
+                if file1 [0] == "W":
+                    df1 = pd.read_csv (Input_dir + file1, index_col = "Day of Year [Local]")
+                    if file [1:] == file1 [1:]:
                         data = df.merge (df1, how = "outer", on = ["Day of Year [Local]"])
                         data.loc [(data ["Wind Speed [m/s]"] == 0) & (data ["Wind Direction [degrees]"].isnull ()), "Wind Direction [degrees]"] = 'No_Wind'
                         data.loc [(data ["Wind Speed [m/s]"] == 0) & (data ["Min Wind Direction [degrees]"].isnull ()), "Min Wind Direction [degrees]"] = 'No_Wind'
@@ -325,7 +282,7 @@ for file in files:
                         
                         data = data [["Wind Direction [degrees]", "Min Wind Direction [degrees]", "Max Wind Direction [degrees]"]]
     
-                        data.to_csv (os.path.join(Input_dir,os.path.basename(file)))
+                        data.to_csv (Input_dir + file)
             
                         No_of_Days = data.shape [0]
                         No_of_Days_with_empty_data = data.iloc [:,1].isnull().sum()
@@ -350,19 +307,21 @@ labels = "Complete", "Missing", "Empty"
 sizes = [Complete_I, Missing_I, Empty_I]
 plt.pie (sizes, labels = labels, startangle = 90, autopct = "%1.1f%%")
 plt.title ("Wind Direction")
-plt.savefig (os.path.abspath(os.path.join(Output_dir ,"Wind Direction.jpg")), bbox_inches = "tight", dpi = 400)
+plt.savefig ("Wind Direction.jpg", bbox_inches = "tight", dpi = 400)
 plt.close ()
 
 # =============================================================================    
 # Wind Gust
+files = os.listdir (Input_dir)
 
 Complete_G = []
 Missing_G = []
 Empty_G = []
 
 for file in files:
-    if os.path.basename(file)[0] == "G":
-            df = pd.read_csv (file, index_col = "Day of Year [Local]")
+    if file [0] == "G":
+            df = pd.read_csv (Input_dir + file, index_col = "Day of Year [Local]")
+            
             No_of_Days = df.shape [0]
             No_of_Days_with_empty_data = df.iloc [:,1].isnull().sum()
         
@@ -386,7 +345,7 @@ labels = "Complete", "Missing", "Empty"
 sizes = [Complete_G, Missing_G, Empty_G]
 plt.pie (sizes, labels = labels, startangle = 90, autopct = "%1.1f%%")
 plt.title ("Wind Gust")
-plt.savefig (os.path.abspath(os.path.join(Output_dir ,"Wind Gust.jpg")), bbox_inches = "tight", dpi = 400)
+plt.savefig ("Wind Gust.jpg", bbox_inches = "tight", dpi = 400)
 plt.close ()
 
 # =============================================================================  

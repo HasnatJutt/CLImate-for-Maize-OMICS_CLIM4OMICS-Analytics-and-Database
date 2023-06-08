@@ -2,9 +2,7 @@
 """
 Created on Thu Feb 17 11:40:36 2022
 
-@author: psarzaeim2, Hasnat
-
-Updated on May 2023
+@author: psarzaeim2
 """
 
 ## Reading data from data sources  
@@ -12,167 +10,39 @@ Updated on May 2023
 # Import necessary libraries
 # =============================================================================
 import os
-import glob
-import pathlib
-import argparse
-import statistics
-import numpy as np
 import pandas as pd
-import seaborn as sns
-from shutil import copyfile
+import numpy as np
 from functools import reduce
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
-
+import seaborn as sns
+import statistics
 
 # =============================================================================
 # Input and Output directories
 # =============================================================================
-parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--input', help='Path of Input Directory (All Files) from Current Path', required=False)
-parser.add_argument('-i1', '--input1', help='Path of Input Directory1 (NSRDB) from Current Path', required=False)
-parser.add_argument('-i2', '--input2', help='Path of Input Directory2 (DayMet) from Current Path', required=False)
-parser.add_argument('-i3', '--input3', help='Path of Input Directory3 (NWS) from Current Path', required=False)
-parser.add_argument('-o1', '--output1', help='Path of Output Directory1 (Uncertainty) from Current Path', required=False)
-parser.add_argument('-o2', '--output1', help='Path of Output Directory1 (Uncertainty Plots) from Current Path', required=False)
-args = parser.parse_args()
+Input_dir1 = os.chdir ("../../APIs/NSRDB/output/NSRDB/")
+Input_dir1 = os.getcwd ().replace ("\\", "/")
+Input_dir1 = Input_dir1 + "/"
 
+Input_dir2 = os.chdir ("../../../DayMet/output/DayMet/")
+Input_dir2 = os.getcwd ().replace ("\\", "/")
+Input_dir2 = Input_dir2 + "/"
 
-def output_fdir(argument_path):
-    dir_path = os.path.abspath(argument_path)
-    if os.path.exists(dir_path):
-        dir_name = dir_path
-    else:
-        os.makedirs(dir_path)
-        dir_name = dir_path
-    return dir_name
+Input_dir3 = os.chdir ("../../../NWS/output/NWS/")
+Input_dir3 = os.getcwd ().replace ("\\", "/")
+Input_dir3 = Input_dir3 + "/"
 
+Output_dir4 = os.chdir ("../../../../Database/output/All_Files")
+Output_dir4 = os.getcwd ().replace ("\\", "/")
+Output_dir4 = Output_dir4 + "/"
 
-if args.input is not None:
-    Input_path = os.path.abspath(args.input)
-    if args.input1 is not None:
-        Input_path1 = os.path.abspath(args.input1)
-    else:
-        Input_path1 = os.path.join(Input_path, '../../APIs/NSRDB/output/NSRDB')
-    if args.input2 is not None:
-        Input_path2 = os.path.abspath(args.input2)
-    else:
-        Input_path1 = os.path.join(Input_path, '../../APIs/DayMet/output/DayMet')
-    if args.input3 is not None:
-        Input_path3 = os.path.abspath(args.input3)
-    else:
-        Input_path1 = os.path.join(Input_path, '../../APIs/NWS/output/NWS')
-    if os.path.exists(Input_path):
-        Input_dir = Input_path
-        if os.path.exists(Input_path1):
-            Input_dir1 = Input_path1
-        else:
-            print(
-                f'The input directory {args.input1} does not exists on system path. Correct the Input directory, provided directory has {Input_path1} path')
-        if os.path.exists(Input_path2):
-            Input_dir2 = Input_path2
-        else:
-            print(
-                f'The input directory {args.input2} does not exists on system path. Correct the Input directory, provided directory has {Input_path2} path')
-        if os.path.exists(Input_path3):
-            Input_dir3 = Input_path3
-        else:
-            print(
-                f'The input directory {args.input3} does not exists on system path. Correct the Input directory, provided directory has {Input_path3} path')
-        if args.output1 is not None:
-            Output_dir1 = output_fdir(args.output1)
-            if args.output2 is not None:
-                Output_dir2 = output_fdir(args.output2)
-            else:
-                Output_path2 = os.path.join(Output_dir1, '../../../Database/output/Uncertainty')
-                Output_dir2 = output_fdir(Output_path2)
-        
+Output_dir1 = os.chdir ("../Uncertainty/")
+Output_dir1 = os.getcwd ().replace ("\\", "/")
+Output_dir1 = Output_dir1 + "/"
 
-    else:
-        print(
-            f'The input directory {args.input} does not exists on system path. Correct the Input directory, provided directory has {Input_path} path')
-
-elif os.path.exists("../../Database/output/All_Files"):
-    Input_dir = "../../Database/output/All_Files"
-    if os.path.exists("../../APIs/NSRDB/output/NSRDB"):
-        Input_dir1 = "../../APIs/NSRDB/output/NSRDB"
-    else:
-        print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
-    if os.path.exists("../../APIs/DayMet/output/DayMet"):
-        Input_dir1 = "../../APIs/DayMet/output/DayMet"
-    else:
-        print(f"The Directory APIs/DayMet/output/DayMet do not exits")
-    if os.path.exists("../../APIs/NWS/output/NWS"):
-        Input_dir1 = "../../APIs/NWS/output/NWS"
-    else:
-        print(f"The Directory APIs/NWS/output/NWS do not exits")
-    if args.output1 is not None:
-        Output_dir1 = output_fdir(args.output1)
-    else:
-        Output_path1 = '../../Database/output/Uncertainty'
-        Output_dir1 = output_fdir(Output_path1)
-    if args.output2 is not None:
-        Output_dir2 = output_fdir(args.output2)
-    else:
-        Output_path2 = '../../Database/output/R/uncertainty_plots'
-        Output_dir2 = output_fdir(Output_path2)
-elif os.path.exists("Database/output/All_Files"):
-    Input_dir = "Database/output/All_Files"
-    if os.path.exists("APIs/NSRDB/output/NSRDB"):
-        Input_dir1 = "APIs/NSRDB/output/NSRDB"
-    else:
-        print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
-    if os.path.exists("APIs/DayMet/output/DayMet"):
-        Input_dir1 = "APIs/DayMet/output/DayMet"
-    else:
-        print(f"The Directory APIs/DayMet/output/DayMet do not exits")
-    if os.path.exists("APIs/NWS/output/NWS"):
-        Input_dir1 = "APIs/NWS/output/NWS"
-    else:
-        print(f"The Directory APIs/NWS/output/NWS do not exits")
-    if args.output1 is not None:
-        Output_dir1 = output_fdir(args.output1)
-    else:
-        Output_path1 = 'Database/output/Uncertainty'
-        Output_dir1 = output_fdir(Output_path1)
-    if args.output2 is not None:
-        Output_dir2 = output_fdir(args.output2)
-    else:
-        Output_path2 = 'Database/output/R/uncertainty_plots'
-        Output_dir2 = output_fdir(Output_path2)
-
-elif os.path.exists("../Database/output/All_Files"):
-    Input_dir = "../Database/output/All_Files"
-    if os.path.exists("../APIs/NSRDB/output/NSRDB"):
-        Input_dir1 = "../APIs/NSRDB/output/NSRDB"
-    else:
-        print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
-    if os.path.exists("../APIs/DayMet/output/DayMet"):
-        Input_dir1 = "../APIs/DayMet/output/DayMet"
-    else:
-        print(f"The Directory APIs/DayMet/output/DayMet do not exits")
-    if os.path.exists("../APIs/NWS/output/NWS"):
-        Input_dir1 = "../APIs/NWS/output/NWS"
-    else:
-        print(f"The Directory APIs/NWS/output/NWS do not exits")
-    if args.output1 is not None:
-        Output_dir1 = output_fdir(args.output1)
-    else:
-        Output_path1 = '../Database/output/Uncertainty'
-        Output_dir1 = output_fdir(Output_path1)
-    if args.output2 is not None:
-        Output_dir2 = output_fdir(args.output2)
-    else:
-        Output_path2 = '../Database/output/R/uncertainty_plots'
-        Output_dir2 = output_fdir(Output_path2)
-else:
-    print(
-        "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
-
-print("Input directory = ", Input_dir)
-print ("Output directory = ", Output_dir1)
 # =============================================================================
 # Creating dataframes
 # =============================================================================
@@ -283,6 +153,9 @@ plt.legend ()
 plt.xticks(fontsize = 10)
 plt.legend (fontsize = 8)
 
+Output_dir2 = os.chdir ("../" + Abb + "/uncertainty_plots")
+Output_dir2 = os.getcwd ().replace ("\\", "/")
+Output_dir2 = Output_dir2 + "/"
 
 plt.savefig (Output_dir2 + "PDF " + "Error" + ".png", dpi = 400) 
 plt.close ()

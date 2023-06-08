@@ -42,7 +42,7 @@ for index, row in dF.iterrows():
     lon = row ["lon"]
 
     # You must request an NSRDB api key from the link above
-    api_key = 'GpdvuInieYc7m1sF5CEW3n9OVQjHX0nkbq6Ild6U'
+    api_key = ''
 
     # Set the attributes to extract (e.g., dhi, ghi, etc.), separated by commas.
     attributes = 'air_temperature,dew_point,relative_humidity,ghi,dhi,dni,total_precipitable_water,wind_speed,wind_direction,surface_pressure'
@@ -59,13 +59,13 @@ for index, row in dF.iterrows():
     utc = 'false'
 
     # Personal info
-    your_name = 'Parisa+Sarzaeim'
+    your_name = ''
     # Your reason for using the NSRDB.
-    reason_for_use = 'research'
+    reason_for_use = ''
     # Your affiliation
-    your_affiliation = 'UNL'
+    your_affiliation = ''
     # Your email address
-    your_email = 'parisa.sarzaeim@huskers.unl.edu'
+    your_email = ''
     # Please join our mailing list so we can keep you up-to-date on new developments.
     mailing_list = 'true'
     # Declare url string

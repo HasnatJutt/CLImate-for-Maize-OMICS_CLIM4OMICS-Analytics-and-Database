@@ -65,7 +65,7 @@ Parameters:
                 keywords values within col_check limit (default is None)
             :type incase_multikey_no: int
 
-ToDo:
+To Do:
     Compulsary:
         Set Input Directory Path in data_input_dir variable.
         Set Output Directory Path in data_output_dir variable.

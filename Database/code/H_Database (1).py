@@ -38,7 +38,7 @@ Input_dir3 = os.chdir ("../../../NWS/output/NWS/")
 Input_dir3 = os.getcwd ().replace ("\\", "/")
 Input_dir3 = Input_dir3 + "/"
 
-Output_dir1 = os.chdir ("../../../../Database/output/S/output/")
+Output_dir1 = os.chdir ("../../../../Database/output/H/output/")
 Output_dir1 = os.getcwd ().replace ("\\", "/")
 Output_dir1 = Output_dir1 + "/"
 
@@ -95,9 +95,9 @@ SC2 = os.listdir (Input_dir2)
 SC3 = os.listdir (Input_dir3)
 
 # =============================================================================
-# Solar Radiation
-Abb = "S"
-variable = "Solar Radiation [W/m2]"
+# Relative Humidity
+Abb = "H"
+variable = "Relative Humidity [%]"
 for filename in G2F_files:
     if filename [0] == Abb:
         G2F = pd.read_csv (Input_dir + filename)
@@ -222,10 +222,10 @@ df_performance.to_csv (Abb + "_" + "performance.csv")
 # Plotting PDFs of Performance Metrics
 # =============================================================================
 # Correlation
-corr1 = sns.distplot (Corr1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-corr2 = sns.distplot (Corr2_list, label = "G2F-DayMet", color = "coral")
-corr3 = sns.distplot (Corr3_list, label = "G2F-NWS", color = "cornflowerblue")
-plt.xlabel ("Corr-SR")
+corr1 = sns.displot (Corr1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+corr2 = sns.displot (Corr2_list, label = "G2F-DayMet", color = "coral")
+corr3 = sns.displot (Corr3_list, label = "g2F-NWS", color = "cornflowerblue")
+plt.xlabel ("Corr-RH")
 plt.ylabel ("Density")
 plt.legend () 
 # plt.title ("Correlation")
@@ -233,10 +233,10 @@ plt.savefig (Output_dir2 + "0PDF " + "Correlation" + ".png", dpi = 400)
 plt.close ()
   
 # MAE
-MAE1 = sns.distplot (MAE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-MAE2 = sns.distplot (MAE2_list, label = "G2F-DayMet", color = "coral")
-MAE3 = sns.distplot (MAE3_list, label = "G2F-NWS", color = "cornflowerblue")
-plt.xlabel ("MAE-SR")
+MAE1 = sns.displot (MAE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+MAE2 = sns.displot (MAE2_list, label = "G2F-DayMet", color = "coral")
+MAE3 = sns.displot (MAE3_list, label = "G2F-NWS", color = "cornflowerblue")
+plt.xlabel ("MAE-RH")
 plt.ylabel ("Density")
 plt.legend () 
 # plt.title ("MAE")
@@ -245,23 +245,23 @@ plt.close ()
 
 # MSE
 plt.style.use ("seaborn")
-sns.set (font_scale = 1.5)
-MSE1 = sns.distplot (MSE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-MSE2 = sns.distplot (MSE2_list, label = "G2F-DayMet", color = "coral")
-MSE3 = sns.distplot (MSE3_list, label = "G2F-NWS", color = "cornflowerblue")
-plt.xlabel ("MSE-SR")
+sns.set (font_scale = 1.5) 
+MSE1 = sns.displot (MSE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+MSE2 = sns.displot (MSE2_list, label = "G2F-DayMet", color = "coral")
+MSE3 = sns.displot (MSE3_list, label = "G2F-NWS", color = "cornflowerblue")
+plt.xlabel ("MSEE-RH")
 plt.ylabel ("Density")
-# plt.legend () 
-plt.title ("MSE")
+plt.legend () 
+# plt.title ("MSE")
 plt.savefig (Output_dir2 + "0PDF " + "Mean Squared Error" + ".png", dpi = 400) 
 plt.close ()
 
 # RMSE
-plt.figure (figsize = (10, 6))
-RMSE1 = sns.distplot (RMSE1_list, hist = False, label = "G2F-NSRDB", color = "mediumseagreen")
-RMSE2 = sns.distplot (RMSE2_list, hist = False, label = "G2F-DayMet", color = "coral")
-RMSE3 = sns.distplot (RMSE3_list, hist = False, label = "G2F-NWS", color = "cornflowerblue")
-plt.xlabel ("RMSE-SR")
+plt.figure (figsize = (9, 6))
+RMSE1 = sns.displot (RMSE1_list,  label = "G2F-NSRDB", color = "mediumseagreen")
+RMSE2 = sns.displot (RMSE2_list,  label = "G2F-DayMet", color = "coral")
+RMSE3 = sns.displot (RMSE3_list,  label = "G2F-NWS", color = "cornflowerblue")
+plt.xlabel ("RMSE-RH")
 plt.ylabel ("Density")
 plt.legend () 
 #plt.title ("RMSE")
@@ -329,7 +329,7 @@ for file in files:
     elif empty_cells == days:
         'Empty'
         Empty.append (file)
-        CS = ["NSRDB ", "DayMet ", "NWS "]
+        CS = ["NWS ", "NSRDB ", "DayMet "]
         if CS [0] + variable in df:
             df_new = df [["Day of Year [Local]", CS [0] + variable, "Min " + CS [0] + variable, "Max " + CS [0] + variable]]
             df_new.to_csv (Output_dir4 + file, index = None)
@@ -437,18 +437,15 @@ for file in files:
                     Min_RMSE = min (RMSE_Selection)
                     if Min_RMSE == RMSE1:
                         df_new = pd.read_csv (Output_dir1 + file, usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable,
-                                                                            CS [0] + variable, "Min " + CS [0] + variable, "Max " + CS [0] + variable])
-            
+                                                                            CS [0] + variable, "Min " + CS [0] + variable, "Max " + CS [0] + variable])                            
                         df_new.to_csv (Output_dir8 + file, index = None)
                     if Min_RMSE == RMSE2:
                         df_new = pd.read_csv (Output_dir1 + file, usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable,
                                                                             CS [1] + variable, "Min " + CS [1] + variable, "Max " + CS [1] + variable])
-                       
                         df_new.to_csv (Output_dir8 + file, index = None)
                     if Min_RMSE == RMSE3:
                         df_new = pd.read_csv (Output_dir1 + file, usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable,
-                                                                            CS [2] + variable, "Min " + CS [2] + variable, "Max " + CS [2] + variable])
-
+                                                                            CS [2] + variable, "Min " + CS [2] + variable, "Max " + CS [2] + variable]) 
                         df_new.to_csv (Output_dir8 + file, index = None)
    
                 else:

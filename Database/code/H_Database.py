@@ -2,368 +2,84 @@
 """
 Created on Mon Jan 27 09:12:58 2020
 
-@author: psarzaeim2, Hasnat
-
-Updated on May 2023
+@author: psarzaeim2
 """
 
-## Reading data from data sources
+## Reading data from data sources  
 # =============================================================================
 # Import necessary libraries
 # =============================================================================
-
-
-
 import os
-import glob
-import pathlib
-import argparse
-import numpy as np
 import pandas as pd
-import seaborn as sns
-from shutil import copyfile
+import numpy as np
 from functools import reduce
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
-
+import seaborn as sns
 
 # =============================================================================
 # Input and Output directories
 # =============================================================================
-parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--input', help='Path of Input Directory (G2F Separating) from Current Path', required=False)
-parser.add_argument('-i1', '--input1', help='Path of Input Directory1 (NSRDB) from Current Path', required=False)
-parser.add_argument('-i2', '--input2', help='Path of Input Directory2 (DayMet) from Current Path', required=False)
-parser.add_argument('-i3', '--input3', help='Path of Input Directory3 (NWS) from Current Path', required=False)
-parser.add_argument('-o1', '--output1', help='Path of Output Directory1 (Output) from Current Path', required=False)
-parser.add_argument('-o2', '--output2', help='Path of Output Directory2 (Plots) from Current Path', required=False)
-parser.add_argument('-o3', '--output3', help='Path of Output Directory3 (Complete) from Current Path', required=False)
-parser.add_argument('-o4', '--output4', help='Path of Output Directory4 (Empty) from Current Path', required=False)
-parser.add_argument('-o5', '--output5', help='Path of Output Directory5 (Enough) from Current Path', required=False)
-parser.add_argument('-o6', '--output6', help='Path of Output Directory6 (Not Enough) from Current Path', required=False)
-parser.add_argument('-o7', '--output7', help='Path of Output Directory7 (Less) from Current Path', required=False)
-parser.add_argument('-o8', '--output8', help='Path of Output Directory8 (More) from Current Path', required=False)
-parser.add_argument('-o9', '--output9', help='Path of Output Directory9 (No Lat Lon) from Current Path', required=False)
-parser.add_argument('-o10', '--output10', help='Path of Output Directory10 (All Files) from Current Path', required=False)
+path = os.chdir ("../../G2F data preprocessing/Environment/output/G2F Separating/")
+Input_dir = os.getcwd ().replace ("\\", "/")
+Input_dir = Input_dir + "/"
 
-args = parser.parse_args()
+Input_dir1 = os.chdir ("../../../../APIs/NSRDB/output/NSRDB/")
+Input_dir1 = os.getcwd ().replace ("\\", "/")
+Input_dir1 = Input_dir1 + "/"
 
+Input_dir2 = os.chdir ("../../../DayMet/output/DayMet/")
+Input_dir2 = os.getcwd ().replace ("\\", "/")
+Input_dir2 = Input_dir2 + "/"
 
-def output_fdir(argument_path):
-    dir_path = os.path.abspath(argument_path)
-    if os.path.exists(dir_path):
-        dir_name = dir_path
-    else:
-        os.makedirs(dir_path)
-        dir_name = dir_path
-    return dir_name
+Input_dir3 = os.chdir ("../../../NWS/output/NWS/")
+Input_dir3 = os.getcwd ().replace ("\\", "/")
+Input_dir3 = Input_dir3 + "/"
 
+Output_dir1 = os.chdir ("../../../../Database/output/H/output/")
+Output_dir1 = os.getcwd ().replace ("\\", "/")
+Output_dir1 = Output_dir1 + "/"
 
-if args.input is not None:
-    Input_path = os.path.abspath(args.input)
-    if args.input1 is not None:
-        Input_path1 = os.path.abspath(args.input1)
-    else:
-        Input_path1 = os.path.join(Input_path, '../../../../APIs/NSRDB/output/NSRDB')
-    if args.input2 is not None:
-        Input_path2 = os.path.abspath(args.input2)
-    else:
-        Input_path1 = os.path.join(Input_path, '../../../../APIs/DayMet/output/DayMet')
-    if args.input3 is not None:
-        Input_path3 = os.path.abspath(args.input3)
-    else:
-        Input_path1 = os.path.join(Input_path, '../../../../APIs/NWS/output/NWS')
-    if os.path.exists(Input_path):
-        Input_dir = Input_path
-        if os.path.exists(Input_path1):
-            Input_dir1 = Input_path1
-        else:
-            print(
-                f'The input directory {args.input1} does not exists on system path. Correct the Input directory, provided directory has {Input_path1} path')
-        if os.path.exists(Input_path2):
-            Input_dir2 = Input_path2
-        else:
-            print(
-                f'The input directory {args.input2} does not exists on system path. Correct the Input directory, provided directory has {Input_path2} path')
-        if os.path.exists(Input_path3):
-            Input_dir3 = Input_path3
-        else:
-            print(
-                f'The input directory {args.input3} does not exists on system path. Correct the Input directory, provided directory has {Input_path3} path')
-        if args.output1 is not None:
-            Output_dir1 = output_fdir(args.output1)
-            if args.output2 is not None:
-                Output_dir2 = output_fdir(args.output2)
-            else:
-                Output_path2 = os.path.join(Output_dir1, '../plots')
-                Output_dir2 = output_fdir(Output_path2)
-            if args.output3 is not None:
-                Output_dir3 = output_fdir(args.output3)
-            else:
-                Output_path3 = os.path.join(Output_dir1, '../complete')
-                Output_dir3 = output_fdir(Output_path3)
-            if args.output4 is not None:
-                Output_dir4 = output_fdir(args.output4)
-            else:
-                Output_path4 = os.path.join(Output_dir1, '../empty')
-                Output_dir4 = output_fdir(Output_path4)
-            if args.output5 is not None:
-                Output_dir5 = output_fdir(args.output5)
-            else:
-                Output_path5 = os.path.join(Output_dir1, '../enough')
-                Output_dir5 = output_fdir(Output_path5)
-            if args.output6 is not None:
-                Output_dir6 = output_fdir(args.output6)
-            else:
-                Output_path6 = os.path.join(Output_dir1, '../not_enough')
-                Output_dir6 = output_fdir(Output_path6)
-            if args.output7 is not None:
-                Output_dir7 = output_fdir(args.output7)
-            else:
-                Output_path7 = os.path.join(Output_dir1, '../less')
-                Output_dir7 = output_fdir(Output_path7)
-            if args.output8 is not None:
-                Output_dir8 = output_fdir(args.output8)
-            else:
-                Output_path8 = os.path.join(Output_dir1, '../more')
-                Output_dir8 = output_fdir(Output_path8)
-            if args.output9 is not None:
-                Output_dir9 = output_fdir(args.output9)
-            else:
-                Output_path9 = os.path.join(Output_dir1, '../no_lat_lon')
-                Output_dir9 = output_fdir(Output_path9)
-            if args.output10 is not None:
-                Output_dir10 = output_fdir(args.output10)
-            else:
-                Output_path10 = os.path.join(Output_dir1, '../../All_Files')
-                Output_dir10 = output_fdir(Output_path10)
+Output_dir2 = os.chdir ("../plots")
+Output_dir2 = os.getcwd ().replace ("\\", "/")
+Output_dir2 = Output_dir2 + "/"
 
-        else:
-            Output_path1 = os.path.join(Input_path, '../../../../Database/output/H/output')
-            Output_dir1 = output_fdir(Output_path1)
-            Output_path2 = os.path.join(Input_path, '../../../../Database/output/H/plots')
-            Output_dir2 = output_fdir(Output_path2)
-            Output_path3 = os.path.join(Input_path, '../../../../Database/output/H/complete')
-            Output_dir3 = output_fdir(Output_path3)
-            Output_path4 = os.path.join(Input_path, '../../../../Database/output/H/empty')
-            Output_dir4 = output_fdir(Output_path4)
-            Output_path5 = os.path.join(Input_path, '../../../../Database/output/H/enough')
-            Output_dir5 = output_fdir(Output_path5)
-            Output_path6 = os.path.join(Input_path, '../../../../Database/output/H/not_enough')
-            Output_dir6 = output_fdir(Output_path6)
-            Output_path7 = os.path.join(Input_path, '../../../../Database/output/H/less')
-            Output_dir7 = output_fdir(Output_path7)
-            Output_path8 = os.path.join(Input_path, '../../../../Database/output/H/more')
-            Output_dir8 = output_fdir(Output_path8)
-            Output_path9 = os.path.join(Input_path, '../../../../Database/output/H/no_lat_lon')
-            Output_dir9 = output_fdir(Output_path9)
-            Output_path10 = os.path.join(Input_path, '../../../../Database/output/All_Files')
-            Output_dir10 = output_fdir(Output_path10)
-    else:
-        print(
-            f'The input directory {args.input} does not exists on system path. Correct the Input directory, provided directory has {Input_path} path')
+Output_dir3 = os.chdir ("../complete")
+Output_dir3 = os.getcwd ().replace ("\\", "/")
+Output_dir3 = Output_dir3 + "/"
 
-elif os.path.exists("../../G2F data preprocessing/Environment/output/G2F Separating"):
-    Input_dir = "../../G2F data preprocessing/Environment/output/G2F Separating"
-    if os.path.exists("../../APIs/NSRDB/output/NSRDB"):
-        Input_dir1 = "../../APIs/NSRDB/output/NSRDB"
-    else:
-        print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
-    if os.path.exists("../../APIs/DayMet/output/DayMet"):
-        Input_dir1 = "../../APIs/DayMet/output/DayMet"
-    else:
-        print(f"The Directory APIs/DayMet/output/DayMet do not exits")
-    if os.path.exists("../../APIs/NWS/output/NWS"):
-        Input_dir1 = "../../APIs/NWS/output/NWS"
-    else:
-        print(f"The Directory APIs/NWS/output/NWS do not exits")
-    if args.output1 is not None:
-        Output_dir1 = output_fdir(args.output1)
-    else:
-        Output_path1 = '../../Database/output/H/output'
-        Output_dir1 = output_fdir(Output_path1)
-    if args.output2 is not None:
-        Output_dir2 = output_fdir(args.output2)
-    else:
-        Output_path2 = '../../Database/output/H/plots'
-        Output_dir2 = output_fdir(Output_path2)
-    if args.output3 is not None:
-        Output_dir3 = output_fdir(args.output3)
-    else:
-        Output_path3 = '../../Database/output/H/complete'
-        Output_dir3 = output_fdir(Output_path3)
-    if args.output4 is not None:
-        Output_dir4 = output_fdir(args.output4)
-    else:
-        Output_path4 = '../../Database/output/H/empty'
-        Output_dir4 = output_fdir(Output_path4)
-    if args.output5 is not None:
-        Output_dir5 = output_fdir(args.output5)
-    else:
-        Output_path5 = '../../Database/output/H/enough'
-        Output_dir5 = output_fdir(Output_path5)
-    if args.output6 is not None:
-        Output_dir6 = output_fdir(args.output6)
-    else:
-        Output_path6 = '../../Database/output/H/not_enough'
-        Output_dir6 = output_fdir(Output_path6)
-    if args.output7 is not None:
-        Output_dir7 = output_fdir(args.output7)
-    else:
-        Output_path7 = '../../Database/output/H/less'
-        Output_dir7 = output_fdir(Output_path7)
-    if args.output8 is not None:
-        Output_dir8 = output_fdir(args.output8)
-    else:
-        Output_path8 = '../../Database/output/H/more'
-        Output_dir8 = output_fdir(Output_path8)
-    if args.output9 is not None:
-        Output_dir9 = output_fdir(args.output9)
-    else:
-        Output_path9 = '../../Database/output/H/no_lat_lon'
-        Output_dir9 = output_fdir(Output_path9)
-    if args.output10 is not None:
-        Output_dir10 = output_fdir(args.output10)
-    else:
-        Output_path10 = '../../Database/output/All_Files'
-        Output_dir10 = output_fdir(Output_path10)
-elif os.path.exists("G2F data preprocessing/Environment/output/G2F Separating"):
-    Input_dir = "G2F data preprocessing/Environment/output/G2F Separating"
-    if os.path.exists("APIs/NSRDB/output/NSRDB"):
-        Input_dir1 = "APIs/NSRDB/output/NSRDB"
-    else:
-        print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
-    if os.path.exists("APIs/DayMet/output/DayMet"):
-        Input_dir1 = "APIs/DayMet/output/DayMet"
-    else:
-        print(f"The Directory APIs/DayMet/output/DayMet do not exits")
-    if os.path.exists("APIs/NWS/output/NWS"):
-        Input_dir1 = "APIs/NWS/output/NWS"
-    else:
-        print(f"The Directory APIs/NWS/output/NWS do not exits")
-    if args.output1 is not None:
-        Output_dir1 = output_fdir(args.output1)
-    else:
-        Output_path1 = 'Database/output/H/output'
-        Output_dir1 = output_fdir(Output_path1)
-    if args.output2 is not None:
-        Output_dir2 = output_fdir(args.output2)
-    else:
-        Output_path2 = 'Database/output/H/plots'
-        Output_dir2 = output_fdir(Output_path2)
-    if args.output3 is not None:
-        Output_dir3 = output_fdir(args.output3)
-    else:
-        Output_path3 = 'Database/output/H/complete'
-        Output_dir3 = output_fdir(Output_path3)
-    if args.output4 is not None:
-        Output_dir4 = output_fdir(args.output4)
-    else:
-        Output_path4 = 'Database/output/H/empty'
-        Output_dir4 = output_fdir(Output_path4)
-    if args.output5 is not None:
-        Output_dir5 = output_fdir(args.output5)
-    else:
-        Output_path5 = 'Database/output/H/enough'
-        Output_dir5 = output_fdir(Output_path5)
-    if args.output6 is not None:
-        Output_dir6 = output_fdir(args.output6)
-    else:
-        Output_path6 = 'Database/output/H/not_enough'
-        Output_dir6 = output_fdir(Output_path6)
-    if args.output7 is not None:
-        Output_dir7 = output_fdir(args.output7)
-    else:
-        Output_path7 = 'Database/output/H/less'
-        Output_dir7 = output_fdir(Output_path7)
-    if args.output8 is not None:
-        Output_dir8 = output_fdir(args.output8)
-    else:
-        Output_path8 = 'Database/output/H/more'
-        Output_dir8 = output_fdir(Output_path8)
-    if args.output9 is not None:
-        Output_dir9 = output_fdir(args.output9)
-    else:
-        Output_path9 = 'Database/output/H/no_lat_lon'
-        Output_dir9 = output_fdir(Output_path9)
-    if args.output10 is not None:
-        Output_dir10 = output_fdir(args.output10)
-    else:
-        Output_path10 = 'Database/output/All_Files'
-        Output_dir10 = output_fdir(Output_path10)
-elif os.path.exists("../G2F data preprocessing/Environment/output/G2F Separating"):
-    Input_dir = "../G2F data preprocessing/Environment/output/G2F Separating"
-    if os.path.exists("../APIs/NSRDB/output/NSRDB"):
-        Input_dir1 = "../APIs/NSRDB/output/NSRDB"
-    else:
-        print(f"The Directory APIs/NSRDB/output/NSRDB do not exits")
-    if os.path.exists("../APIs/DayMet/output/DayMet"):
-        Input_dir1 = "../APIs/DayMet/output/DayMet"
-    else:
-        print(f"The Directory APIs/DayMet/output/DayMet do not exits")
-    if os.path.exists("../APIs/NWS/output/NWS"):
-        Input_dir1 = "../APIs/NWS/output/NWS"
-    else:
-        print(f"The Directory APIs/NWS/output/NWS do not exits")
-    if args.output1 is not None:
-        Output_dir1 = output_fdir(args.output1)
-    else:
-        Output_path1 = '../Database/output/H/output'
-        Output_dir1 = output_fdir(Output_path1)
-    if args.output2 is not None:
-        Output_dir2 = output_fdir(args.output2)
-    else:
-        Output_path2 = '../Database/output/H/plots'
-        Output_dir2 = output_fdir(Output_path2)
-    if args.output3 is not None:
-        Output_dir3 = output_fdir(args.output3)
-    else:
-        Output_path3 = '../Database/output/H/complete'
-        Output_dir3 = output_fdir(Output_path3)
-    if args.output4 is not None:
-        Output_dir4 = output_fdir(args.output4)
-    else:
-        Output_path4 = '../Database/output/H/empty'
-        Output_dir4 = output_fdir(Output_path4)
-    if args.output5 is not None:
-        Output_dir5 = output_fdir(args.output5)
-    else:
-        Output_path5 = '../Database/output/H/enough'
-        Output_dir5 = output_fdir(Output_path5)
-    if args.output6 is not None:
-        Output_dir6 = output_fdir(args.output6)
-    else:
-        Output_path6 = '../Database/output/H/not_enough'
-        Output_dir6 = output_fdir(Output_path6)
-    if args.output7 is not None:
-        Output_dir7 = output_fdir(args.output7)
-    else:
-        Output_path7 = '../Database/output/H/less'
-        Output_dir7 = output_fdir(Output_path7)
-    if args.output8 is not None:
-        Output_dir8 = output_fdir(args.output8)
-    else:
-        Output_path8 = '../Database/output/H/more'
-        Output_dir8 = output_fdir(Output_path8)
-    if args.output9 is not None:
-        Output_dir9 = output_fdir(args.output9)
-    else:
-        Output_path9 = '../Database/output/H/no_lat_lon'
-        Output_dir9 = output_fdir(Output_path9)
-    if args.output10 is not None:
-        Output_dir10 = output_fdir(args.output10)
-    else:
-        Output_path10 = '../Database/output/All_Files'
-        Output_dir10 = output_fdir(Output_path10)
-else:
-    print(
-        "No input directory is provided in arguments and directory is not exits on possible locations. Provide the directory in arguments or create directories based on instructions")
+Output_dir4 = os.chdir ("../empty")
+Output_dir4 = os.getcwd ().replace ("\\", "/")
+Output_dir4 = Output_dir4 + "/"
+
+# Output_dir5 = os.chdir ("../enough")
+# Output_dir5 = os.getcwd ().replace ("\\", "/")
+# Output_dir5 = Output_dir5 + "/"
+
+Output_dir6 = os.chdir ("../not_enough")
+Output_dir6 = os.getcwd ().replace ("\\", "/")
+Output_dir6 = Output_dir6 + "/"
+
+Output_dir7 = os.chdir ("../less")
+Output_dir7 = os.getcwd ().replace ("\\", "/")
+Output_dir7 = Output_dir7 + "/"
+
+Output_dir8 = os.chdir ("../more")
+Output_dir8 = os.getcwd ().replace ("\\", "/")
+Output_dir8 = Output_dir8 + "/"
+
+Output_dir9 = os.chdir ("../no_lat_lon")
+Output_dir9 = os.getcwd ().replace ("\\", "/")
+Output_dir9 = Output_dir9 + "/"
+
+Output_dir10 = os.chdir ("../../All_Files")
+Output_dir10 = os.getcwd ().replace ("\\", "/")
+Output_dir10 = Output_dir10 + "/"
 
 print("Input directory = ", Input_dir)
 print ("Output directory = ", Output_dir1)
-
         
 # =============================================================================
 # Creating dataframes
@@ -506,9 +222,9 @@ df_performance.to_csv (Abb + "_" + "performance.csv")
 # Plotting PDFs of Performance Metrics
 # =============================================================================
 # Correlation
-corr1 = sns.displot (Corr1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-corr2 = sns.displot (Corr2_list, label = "G2F-DayMet", color = "coral")
-corr3 = sns.displot (Corr3_list, label = "g2F-NWS", color = "cornflowerblue")
+corr1 = sns.distplot (Corr1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+corr2 = sns.distplot (Corr2_list, label = "G2F-DayMet", color = "coral")
+corr3 = sns.distplot (Corr3_list, label = "g2F-NWS", color = "cornflowerblue")
 plt.xlabel ("Corr-RH")
 plt.ylabel ("Density")
 plt.legend () 
@@ -517,9 +233,9 @@ plt.savefig (Output_dir2 + "0PDF " + "Correlation" + ".png", dpi = 400)
 plt.close ()
   
 # MAE
-MAE1 = sns.displot (MAE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-MAE2 = sns.displot (MAE2_list, label = "G2F-DayMet", color = "coral")
-MAE3 = sns.displot (MAE3_list, label = "G2F-NWS", color = "cornflowerblue")
+MAE1 = sns.distplot (MAE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+MAE2 = sns.distplot (MAE2_list, label = "G2F-DayMet", color = "coral")
+MAE3 = sns.distplot (MAE3_list, label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("MAE-RH")
 plt.ylabel ("Density")
 plt.legend () 
@@ -530,9 +246,9 @@ plt.close ()
 # MSE
 plt.style.use ("seaborn")
 sns.set (font_scale = 1.5) 
-MSE1 = sns.displot (MSE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-MSE2 = sns.displot (MSE2_list, label = "G2F-DayMet", color = "coral")
-MSE3 = sns.displot (MSE3_list, label = "G2F-NWS", color = "cornflowerblue")
+MSE1 = sns.distplot (MSE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+MSE2 = sns.distplot (MSE2_list, label = "G2F-DayMet", color = "coral")
+MSE3 = sns.distplot (MSE3_list, label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("MSEE-RH")
 plt.ylabel ("Density")
 plt.legend () 
@@ -542,9 +258,9 @@ plt.close ()
 
 # RMSE
 plt.figure (figsize = (9, 6))
-RMSE1 = sns.displot (RMSE1_list,  label = "G2F-NSRDB", color = "mediumseagreen")
-RMSE2 = sns.displot (RMSE2_list,  label = "G2F-DayMet", color = "coral")
-RMSE3 = sns.displot (RMSE3_list,  label = "G2F-NWS", color = "cornflowerblue")
+RMSE1 = sns.distplot (RMSE1_list, hist = False, label = "G2F-NSRDB", color = "mediumseagreen")
+RMSE2 = sns.distplot (RMSE2_list, hist = False, label = "G2F-DayMet", color = "coral")
+RMSE3 = sns.distplot (RMSE3_list, hist = False, label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("RMSE-RH")
 plt.ylabel ("Density")
 plt.legend () 
