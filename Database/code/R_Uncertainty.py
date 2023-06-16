@@ -269,14 +269,14 @@ Err3_list_flat = [item for sublist in Err3_list for item in sublist]
 # Err1 = sns.displot (Err1_list_flat, label = "G2F-NSRDB", color = "mediumseagreen")
 # SD_1 = statistics.pstdev (Err1_list_flat)
 # plt.text (-600, 0.030, '$SD_{G2F-NSRDB}$' + " = " + str (round (SD_1, 2)), fontsize = 10) 
-
-Err2 = sns.displot (Err2_list_flat, label = "G2F-DayMet", color = "coral")
+ax = plt.subplots()
+ax = sns.kdeplot(Err2_list_flat, label = "G2F-DayMet", color = "coral", multiple="stack")
 SD_2 = statistics.pstdev (Err2_list_flat)
-plt.text (-1500, 0.176, '$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
+ax.text (1500, 0.0031, '$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
 
-Err3 = sns.displot (Err3_list_flat, label = "G2F-NWS", color = "cornflowerblue")
+ax = sns.kdeplot(Err3_list_flat, label = "G2F-NWS", color = "cornflowerblue", multiple="stack")
 SD_2 = statistics.pstdev (Err3_list_flat)
-plt.text (-1500, 0.165, '$SD_{G2F-NWS}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
+ax.text (1500, 0.0029, '$SD_{G2F-NWS}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
 
 plt.xlabel ("Err-R")
 plt.ylabel ("Density")

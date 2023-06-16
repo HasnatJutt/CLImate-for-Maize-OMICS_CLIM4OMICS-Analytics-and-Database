@@ -266,13 +266,14 @@ Err2_list_flat = [item for sublist in Err2_list for item in sublist]
 # =============================================================================
 # Plotting PDFs of Errors
 # =============================================================================
-Err1 = sns.displot (Err1_list_flat, label = "G2F-NSRDB", color = "mediumseagreen")
+ax = plt.subplots()
+ax = sns.kdeplot(Err1_list_flat, label = "G2F-NSRDB", color = "mediumseagreen",  multiple="stack")
 SD_1 = statistics.pstdev (Err1_list_flat)
-plt.text (-600, 0.030, '$SD_{G2F-NSRDB}$' + " = " + str (round (SD_1, 2)), fontsize = 10) 
+ax.text (500, 0.015, '$SD_{G2F-NSRDB}$' + " = " + str (round (SD_1, 2)), fontsize = 10)
 
-Err2 = sns.displot (Err2_list_flat, label = "G2F-DayMet", color = "coral")
+ax = sns.kdeplot(Err2_list_flat, label = "G2F-DayMet", color = "coral",  multiple="stack")
 SD_2 = statistics.pstdev (Err2_list_flat)
-plt.text (-600, 0.028, '$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
+ax.text (500, 0.014, '$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
 
 # Err3 = sns.displot (Err3_list_flat, label = "G2F-NWS", color = "cornflowerblue")
 # SD_2 = statistics.pstdev (Err3_list_flat)
