@@ -509,9 +509,9 @@ df_performance.to_csv(os.path.abspath(os.path.join(pathlib.Path(Output_dir1).par
 # Plotting PDFs of Performance Metrics
 # =============================================================================
 # Correlation
-corr1 = sns.displot (Corr1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-corr2 = sns.displot (Corr2_list, label = "G2F-DayMet", color = "coral")
-corr3 = sns.displot (Corr3_list, label = "G2F-NWS", color = "cornflowerblue")
+corr1 = sns.kdeplot (Corr1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+corr2 = sns.kdeplot (Corr2_list, label = "G2F-DayMet", color = "coral")
+corr3 = sns.kdeplot (Corr3_list, label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("Corr-WD")
 plt.ylabel ("Density")
 plt.legend () 
@@ -520,9 +520,9 @@ plt.savefig (os.path.join(Output_dir2 , "0PDF " + "Correlation" + ".png"), dpi =
 plt.close ()
   
 # MAE
-MAE1 = sns.displot (MAE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-MAE2 = sns.displot (MAE2_list, label = "G2F-DayMet", color = "coral")
-MAE3 = sns.displot (MAE3_list, label = "G2F-NWS", color = "cornflowerblue")
+MAE1 = sns.kdeplot (MAE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+MAE2 = sns.kdeplot (MAE2_list, label = "G2F-DayMet", color = "coral")
+MAE3 = sns.kdeplot (MAE3_list, label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("MAE-WD")
 plt.ylabel ("Density")
 plt.legend () 
@@ -533,9 +533,9 @@ plt.close ()
 # MSE
 plt.style.use ("seaborn")
 sns.set (font_scale = 1.5)
-MSE1 = sns.displot (MSE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-MSE2 = sns.displot (MSE2_list, label = "G2F-DayMet", color = "coral")
-MSE3 = sns.displot (MSE3_list, label = "G2F-NWS", color = "cornflowerblue")
+MSE1 = sns.kdeplot (MSE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+MSE2 = sns.kdeplot (MSE2_list, label = "G2F-DayMet", color = "coral")
+MSE3 = sns.kdeplot (MSE3_list, label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("MSE-WD")
 plt.ylabel ("Density")
 plt.legend () 
@@ -545,9 +545,9 @@ plt.close ()
 
 # RMSE
 plt.figure (figsize = (10, 6))
-RMSE1 = sns.displot (RMSE1_list,  label = "G2F-NSRDB", color = "mediumseagreen")
-RMSE2 = sns.displot (RMSE2_list,  label = "G2F-DayMet", color = "coral")
-RMSE3 = sns.displot (RMSE3_list,  label = "G2F-NWS", color = "cornflowerblue")
+RMSE1 = sns.kdeplot (RMSE1_list,  label = "G2F-NSRDB", color = "mediumseagreen")
+RMSE2 = sns.kdeplot (RMSE2_list,  label = "G2F-DayMet", color = "coral")
+RMSE3 = sns.kdeplot (RMSE3_list,  label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("RMSE-WD")
 plt.ylabel ("Density")
 plt.legend () 

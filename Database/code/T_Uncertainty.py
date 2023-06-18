@@ -267,18 +267,26 @@ Err3_list_flat = [item for sublist in Err3_list for item in sublist]
 # Plotting PDFs of Errors
 # =============================================================================
 ax = plt.subplots()
-ax = sns.kdeplot(Err1_list_flat, label = "G2F-NSRDB", color = "mediumseagreen",  multiple="stack")
+ax = sns.kdeplot(Err1_list_flat, label = "G2F-NSRDB", color = "mediumseagreen")
 SD_1 = statistics.pstdev (Err1_list_flat)
-ax.text (-35, 0.30, '$SD_{G2F-NSRDB}$' + " = " + str (round (SD_1, 2)), fontsize = 10)
+#ax.text (-35, 0.30, '$SD_{G2F-NSRDB}$' + " = " + str (round (SD_1, 2)), fontsize = 10)
 
-ax = sns.kdeplot(Err2_list_flat, label = "G2F-DayMet", color = "coral",  multiple="stack")
+ax = sns.kdeplot(Err2_list_flat, label = "G2F-DayMet", color = "coral")
 SD_2 = statistics.pstdev (Err2_list_flat)
-ax.text (-35, 0.32, '$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
+#ax.text (-35, 0.32, '$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
 
-ax = sns.kdeplot(Err3_list_flat, label = "G2F-NWS", color = "cornflowerblue",  multiple="stack")
-SD_2 = statistics.pstdev (Err3_list_flat)
-ax.text (-35, 0.34, '$SD_{G2F-NWS}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
-
+ax = sns.kdeplot(Err3_list_flat, label = "G2F-NWS", color = "cornflowerblue")
+SD_3 = statistics.pstdev (Err3_list_flat)
+#ax.text (-35, 0.34, '$SD_{G2F-NWS}$' + " = " + str (round (SD_3, 2)), fontsize = 10)
+xlimits = [abs(ax.get_xlim()[0]), abs(ax.get_xlim()[1])]
+if xlimits.index(max(xlimits)) == 0:
+    ax.set_xlim(ax.get_xlim()[0], abs(ax.get_xlim()[0]))
+else:
+    if ax.get_xlim()[0] > 0:
+        ax.set_xlim(ax.get_xlim()[0], abs(ax.get_xlim()[1]))
+    else:
+        ax.set_xlim(-1*(ax.get_xlim()[1]), abs(ax.get_xlim()[1]))
+plt.title('$SD_{G2F-NSRDB}$' + " = " + str (round (SD_1, 2))+"  ,  "+'$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2))+"  ,  "+'$SD_{G2F-NWS}$' + " = " + str (round (SD_3, 2)))
 plt.xlabel ("Err-T")
 plt.ylabel ("Density")
 plt.legend () 
