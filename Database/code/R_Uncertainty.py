@@ -270,21 +270,28 @@ Err3_list_flat = [item for sublist in Err3_list for item in sublist]
 # SD_1 = statistics.pstdev (Err1_list_flat)
 # plt.text (-600, 0.030, '$SD_{G2F-NSRDB}$' + " = " + str (round (SD_1, 2)), fontsize = 10) 
 ax = plt.subplots()
-ax = sns.kdeplot(Err2_list_flat, label = "G2F-DayMet", color = "coral", multiple="stack")
+ax = sns.kdeplot(Err2_list_flat, label = "G2F-DayMet",  cut=0, color = "coral",common_norm=True, common_grid=True)
 SD_2 = statistics.pstdev (Err2_list_flat)
-ax.text (1500, 0.0031, '$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
 
-ax = sns.kdeplot(Err3_list_flat, label = "G2F-NWS", color = "cornflowerblue", multiple="stack")
+ax = sns.kdeplot(Err3_list_flat, label = "G2F-NWS", cut=0, color = "cornflowerblue",common_norm=True,common_grid=True)
 SD_2 = statistics.pstdev (Err3_list_flat)
-ax.text (1500, 0.0029, '$SD_{G2F-NWS}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
-
+xlimits = [abs(ax.get_xlim()[0]), abs(ax.get_xlim()[1])]
+if xlimits.index(max(xlimits)) == 0:
+    ax.set_xlim(ax.get_xlim()[0], abs(ax.get_xlim()[0]))
+else:
+    if ax.get_xlim()[0] > 0:
+        ax.set_xlim(ax.get_xlim()[0], abs(ax.get_xlim()[1]))
+    else:
+        ax.set_xlim(-1*(ax.get_xlim()[1]), abs(ax.get_xlim()[1]))
+# ax.text (1500, 0.0031, '$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
+# ax.text (1500, 0.0029, '$SD_{G2F-NWS}$' + " = " + str (round (SD_2, 2)), fontsize = 10)
+plt.title('$SD_{G2F-DayMet}$' + " = " + str (round (SD_2, 2))+"  ,  " + '$SD_{G2F-NWS}$' + " = " + str (round (SD_2, 2)))
 plt.xlabel ("Err-R")
 plt.ylabel ("Density")
 plt.legend () 
 #plt.title ("Error")
 plt.xticks(fontsize = 10)
 plt.legend (fontsize = 8)
-
 
 plt.savefig (os.path.join(Output_dir2 , "PDF " + "Error" + ".png"), dpi = 400)
 plt.close ()

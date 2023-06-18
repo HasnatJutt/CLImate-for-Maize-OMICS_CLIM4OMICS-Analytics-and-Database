@@ -508,9 +508,10 @@ df_performance.to_csv(os.path.abspath(os.path.join(pathlib.Path(Output_dir1).par
 # Plotting PDFs of Performance Metrics
 # =============================================================================
 # Correlation
-corr1 = sns.displot (Corr1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-corr2 = sns.displot (Corr2_list, label = "G2F-DayMet", color = "coral")
-corr3 = sns.displot (Corr3_list, label = "G2F-NWS", color = "cornflowerblue")
+corr = plt.subplots()
+corr = sns.kdeplot(Corr1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+corr = sns.kdeplot(Corr2_list, label = "G2F-DayMet", color = "coral")
+corr = sns.kdeplot(Corr3_list, label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("Corr-R")
 plt.ylabel ("Density")
 plt.legend () 
@@ -519,9 +520,10 @@ plt.savefig (os.path.join(Output_dir2 , "0PDF " + "Correlation" + ".png"), dpi =
 plt.close ()
   
 # MAE
-MAE1 = sns.displot (MAE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-MAE2 = sns.displot (MAE2_list, label = "DayMet", color = "coral")
-MAE3 = sns.displot (MAE3_list, label = "NWS", color = "cornflowerblue")
+MAE = plt.subplots()
+MAE = sns.kdeplot(MAE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+MAE = sns.kdeplot(MAE2_list, label = "DayMet", color = "coral")
+MAE = sns.kdeplot(MAE3_list, label = "NWS", color = "cornflowerblue")
 plt.xlabel ("MAE-R")
 plt.ylabel ("Density")
 plt.legend () 
@@ -530,11 +532,12 @@ plt.savefig (os.path.join(Output_dir2 , "0PDF " + "Mean Absolute Error" + ".png"
 plt.close ()
 
 # MSE
+MSE = plt.subplots()
 plt.style.use ("seaborn")
 sns.set (font_scale = 1.5)
-MSE1 = sns.displot (MSE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
-MSE2 = sns.displot (MSE2_list, label = "G2F-DayMet", color = "coral")
-MSE3 = sns.displot (MSE3_list, label = "G2F-NWS", color = "cornflowerblue")
+MSE = sns.kdeplot(MSE1_list, label = "G2F-NSRDB", color = "mediumseagreen")
+MSE = sns.kdeplot(MSE2_list, label = "G2F-DayMet", color = "coral")
+MSE = sns.kdeplot(MSE3_list, label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("MSE-R")
 plt.ylabel ("Density")
 plt.legend () 
@@ -543,9 +546,10 @@ plt.savefig (os.path.join(Output_dir2 , "0PDF " + "Mean Squared Error" + ".png")
 plt.close ()
 
 # RMSE
-RMSE1 = sns.displot (RMSE1_list,  label = "G2F-NSRDB", color = "mediumseagreen")
-RMSE2 = sns.displot (RMSE2_list,  label = "G2F-DayMet", color = "coral")
-RMSE3 = sns.displot (RMSE3_list,  label = "G2F-NWS", color = "cornflowerblue")
+RMSE = plt.subplots()
+RMSE = sns.kdeplot(RMSE1_list,  label = "G2F-NSRDB", color = "mediumseagreen")
+RMSE = sns.kdeplot(RMSE2_list,  label = "G2F-DayMet", color = "coral")
+RMSE = sns.kdeplot(RMSE3_list,  label = "G2F-NWS", color = "cornflowerblue")
 plt.xlabel ("RMSE-R")
 plt.ylabel ("Density")
 plt.legend () 
@@ -655,16 +659,22 @@ for file in files:
                    MSE1 = mean_squared_error (y, y1)
                    RMSE1 = np.sqrt (MSE1)
                    RMSE_Selection.append (RMSE1)
+                else:
+                    RMSE1=None
                 if CS [1] + variable in df:
                    y2 = df [CS [1] + variable]
                    MSE2 = mean_squared_error (y, y2)
                    RMSE2 = np.sqrt (MSE2)
-                   RMSE_Selection.append (RMSE2)                    
+                   RMSE_Selection.append (RMSE2)
+                else:
+                    RMSE2=None
                 if CS [2] + variable in df:
                    y3 = df [CS [2] + variable]
                    MSE3 = mean_squared_error (y, y3)
                    RMSE3 = np.sqrt (MSE3)
                    RMSE_Selection.append (RMSE3)
+                else:
+                    RMSE3=None
                 if len (RMSE_Selection) > 0:
                   Min_RMSE = min (RMSE_Selection)
                   if Min_RMSE == RMSE1:
@@ -710,30 +720,38 @@ for file in files:
                     MSE1 = mean_squared_error (y, y1)
                     RMSE1 = np.sqrt (MSE1)
                     RMSE_Selection.append (RMSE1)
+                else:
+                    RMSE1=None
                 if CS [1] + variable in df:
                     y2 = df [CS [1] + variable]
                     MSE2 = mean_squared_error (y, y2)
                     RMSE2 = np.sqrt (MSE2)
                     RMSE_Selection.append (RMSE2)
+                else:
+                    RMSE2=None
                 if CS [2] + variable in df:
                     y3 = df [CS [2] + variable]
                     MSE3 = mean_squared_error (y, y3)
                     RMSE3 = np.sqrt (MSE3)
                     RMSE_Selection.append (RMSE3)
+                else:
+                    RMSE3 = None
                 if len (RMSE_Selection) > 0:
                     Min_RMSE = min (RMSE_Selection)
                     if Min_RMSE == RMSE1:
                         df_new = pd.read_csv(os.path.join (Output_dir1, file), usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable,
                                                                             CS [0] + variable, "Min " + CS [0] + variable, "Max " + CS [0] + variable])                            
                         df_new.to_csv(os.path.join (Output_dir8, file), index = None)
-                    if Min_RMSE == RMSE2:
+                    elif Min_RMSE == RMSE2:
                         df_new = pd.read_csv(os.path.join (Output_dir1, file), usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable,
                                                                             CS [1] + variable, "Min " + CS [1] + variable, "Max " + CS [1] + variable])
                         df_new.to_csv(os.path.join (Output_dir8, file), index = None)
-                    if Min_RMSE == RMSE3:
+                    elif Min_RMSE == RMSE3:
                         df_new = pd.read_csv(os.path.join (Output_dir1, file), usecols = ["Day of Year [Local]", variable, "Min " + variable, "Max " + variable,
                                                                             CS [2] + variable, "Min " + CS [2] + variable, "Max " + CS [2] + variable]) 
                         df_new.to_csv(os.path.join (Output_dir8, file), index = None)
+                    else:
+                        pass
    
                 else:
                    No_lat_lon.append (file)
